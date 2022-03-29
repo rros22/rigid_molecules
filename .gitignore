@@ -1,0 +1,6 @@
+results/*.pdb
+results/*.csv
+run.sh
+
+bin/output
+obj/*.o

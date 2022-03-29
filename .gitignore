@@ -1,6 +1,7 @@
 results/*.pdb
 results/*.csv
 run.sh
+module.sh
 
 bin/output
 obj/*.o

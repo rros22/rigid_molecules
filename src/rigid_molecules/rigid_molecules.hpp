@@ -47,6 +47,8 @@ public:
 
   water();
 
+  water(std::array<double, 3> CoM, quaternion Q);
+
   void set_global_coordinates();
 
 

@@ -105,3 +105,11 @@ water::water(){
   q1.set_local_coordinates(q1_X);
 
 }
+
+water::water(std::array<double, 3> CoM, quaternion Q): water(){
+
+    set_position(CoM);
+    set_orientation(Q);
+
+    set_global_coordinates();
+}

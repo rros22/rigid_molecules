@@ -1,7 +1,7 @@
 
 #Compiler and project folder flags
 CC = g++
-FLAGS = -Wall
+FLAGS = -std=c++11 -stdlib=libc++
 
 SRC = src
 OBJ = obj
@@ -20,14 +20,14 @@ OBJS := $(patsubst %.cpp, $(OBJ)/%.o, $(notdir $(SRCS)))
 
 #Compile rule for all o files to output file
 $(BIN): $(OBJS)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(FLAGS) $(OBJS) -o $@
 
 
 #Compile rule for all cpp files to o files in every subdirectory
 .SECONDEXPANSION:
 
 $(OBJ)/%.o: $$(foreach dir,$(DIRS),$$(wildcard $$(dir)/$$*.cpp))
-	$(CC) -c $^ -o $@
+	$(CC) $(FLAGS) -c $^ -o $@
 
 #Clean all o files and binaries
 clean:

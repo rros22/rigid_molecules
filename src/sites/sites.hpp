@@ -6,16 +6,26 @@
 
 class site{
 
-public:
+protected:
 
-  //position
+  //global position
   std::array<double, 3> X;
+
+  //local position (X - X(CoM))
+  std::array<double, 3> X_l;
 
   //velocity
   std::array<double, 3> V;
 
   //forces
   std::array<double, 3> F;
+
+public:
+
+  void set_local_coordinates(std::array<double, 3> X_l);
+  void set_global_coordinates(std::array<double, 3> X);
+
+  std::array<double, 3> get_local_coordinates();
 
 };
 
@@ -30,6 +40,28 @@ class charge: public site{
 
   //charge
   double q;
+
+  //mass
+  double m;
+
+public:
+
+  void set_parameters(double q, double m);
+
+};
+
+class lj_site: public site{
+
+  //parameters
+  double sigma;
+  double epsilon;
+
+  //mass
+  double m;
+
+public:
+
+  void set_parameters(double sigma, double epsilon, double m);
 
 };
 

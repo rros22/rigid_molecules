@@ -24,6 +24,26 @@ public:
   double get_angle();
   std::array<double, 3> get_axis();
 
+  std::array<double, 4> get_parameters();
+
+
+};
+
+class rot_matrix{
+
+private:
+
+  std::array<double, 9> elements;
+
+  void set_elements(quaternion Q);
+
+public:
+
+  rot_matrix(quaternion Q);
+
+  std::array<double, 3> matrix_vector(std::array<double, 3> a);
+
+
 };
 
 #endif

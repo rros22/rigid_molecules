@@ -39,3 +39,53 @@ std::array<double, 3> quaternion::get_axis(){
 
   return this->q;
 }
+
+std::array<double, 4> quaternion::get_parameters(){
+
+  return {q0, q[0], q[1], q[2]};
+}
+
+/*
+
+  Rotation matrix class
+
+*/
+
+void rot_matrix::set_elements(quaternion Q){
+
+  double q0 = Q.get_parameters()[0];
+  double q1 = Q.get_parameters()[1];
+  double q2 = Q.get_parameters()[2];
+  double q3 = Q.get_parameters()[3];
+
+  //set elements
+  elements[0] = pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2);
+  elements[1] = 2*(q1*q2 - q0*q3);
+  elements[2] = 2*(q1*q3 + q0*q2);
+  elements[3] = 2*(q1*q2 + q0*q3);
+  elements[4] = pow(q0, 2) - pow(q1, 2) + pow(q2, 2) - pow(q3, 2);
+  elements[5] = 2*(q2*q3 - q0*q1);
+  elements[6] = 2*(q1*q3 - q0*q2);
+  elements[7] = 2*(q2*q3 + q0*q1);
+  elements[8] = pow(q0, 2) - pow(q1, 2) - pow(q2, 2) + pow(q3, 2);
+
+}
+
+rot_matrix::rot_matrix(quaternion Q){
+
+  set_elements(Q);
+}
+
+//matrix-vector multiplication
+
+std::array<double, 3> rot_matrix::matrix_vector(std::array<double, 3> a){
+
+  std::array<double, 3> result;
+
+  for (int i = 0; i < 3; i++){
+
+    result[i] = elements[3*i]*a[0] + elements[1 + 3*i]*a[1] + elements[2 + 3*i]*a[2];
+  }
+
+  return result;
+}

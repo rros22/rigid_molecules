@@ -6,6 +6,11 @@ Site
 
 */
 
+void site::set_symbol(std::string symbol){
+
+  this->symbol = symbol;
+}
+
 void site::set_local_coordinates(std::array<double, 3> X_l){
 
   this->X_l = X_l;
@@ -16,9 +21,19 @@ void site::set_global_coordinates(std::array<double, 3> X){
   this->X = X;
 }
 
+std::string site::get_symbol(){
+
+  return symbol;
+}
+
 std::array<double, 3> site::get_local_coordinates(){
 
   return this->X_l;
+}
+
+std::array<double, 3> site::get_global_coordinates(){
+
+  return this->X;
 }
 
 /*

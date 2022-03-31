@@ -45,6 +45,7 @@ std::array<double, 4> quaternion::get_parameters(){
   return {q0, q[0], q[1], q[2]};
 }
 
+
 /*
 
   Rotation matrix class

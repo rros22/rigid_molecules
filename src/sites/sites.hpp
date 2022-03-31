@@ -20,12 +20,18 @@ protected:
   //forces
   std::array<double, 3> F;
 
+  //name
+  std::string symbol;
+
 public:
 
+  void set_symbol(std::string symbol);
   void set_local_coordinates(std::array<double, 3> X_l);
   void set_global_coordinates(std::array<double, 3> X);
 
+  std::string get_symbol();
   std::array<double, 3> get_local_coordinates();
+  std::array<double, 3> get_global_coordinates();
 
 };
 

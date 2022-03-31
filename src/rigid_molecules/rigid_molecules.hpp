@@ -2,6 +2,7 @@
 #define RIGID_MOLECULES_HPP
 
 #include <array>
+#include <vector>
 
 #include "../sites/sites.hpp"
 #include "../quaternions/quaternions.hpp"
@@ -19,10 +20,19 @@ protected:
   //moments of inertia, wrt body frame (Ixx, Iyy, Izz)
   std::array<double, 3> I;
 
+  //list of pointers to interaction sites
+  std::vector<site*> sites;
+
+
 public:
 
   void set_position(std::array<double, 3> &CoM);
   void set_orientation(quaternion &Q);
+
+  //methods to be implemented by derived classes
+  virtual void set_global_coordinates(){}
+  virtual std::array<double, 3> return_coordinates_site(int i){}
+  virtual std::vector<site*> return_sites_list(){}
 
 };
 
@@ -51,6 +61,9 @@ public:
 
   void set_global_coordinates();
 
+  std::array<double, 3> return_coordinates_site(int i);
+
+  std::vector<site*> return_sites_list();
 
 
 };

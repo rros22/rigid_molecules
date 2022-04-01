@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include "../rigid_molecules/rigid_molecules.hpp"
 #include "../box/box.hpp"
@@ -7,6 +8,8 @@
 int main(){
 
   Box* domain = new Box(100, 100, 100, 3*3*3);
+
+  delete domain;
 
   return 0;
 }

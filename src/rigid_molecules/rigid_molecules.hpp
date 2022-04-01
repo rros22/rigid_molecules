@@ -3,9 +3,12 @@
 
 #include <array>
 #include <vector>
+#include <iostream>
 
 #include "../sites/sites.hpp"
 #include "../quaternions/quaternions.hpp"
+
+//abstract base class
 
 class rigid_molecule{
 
@@ -26,13 +29,15 @@ protected:
 
 public:
 
+  virtual ~rigid_molecule(){std::cout << "base_destructor" << std::endl;}
+
   void set_position(std::array<double, 3> &CoM);
   void set_orientation(quaternion &Q);
 
   //methods to be implemented by derived classes
-  virtual void set_global_coordinates(){}
-  virtual std::array<double, 3> return_coordinates_site(int i){}
-  virtual std::vector<site*> return_sites_list(){}
+  virtual void set_global_coordinates() = 0;
+  virtual std::array<double, 3> return_coordinates_site(int i) = 0;
+  virtual std::vector<site*> return_sites_list() = 0;
 
 };
 
@@ -56,6 +61,8 @@ private:
 public:
 
   water();
+
+  ~water() {std::cout << "water_destructor" << std::endl;}
 
   water(std::array<double, 3> CoM, quaternion Q);
 

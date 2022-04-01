@@ -31,7 +31,7 @@ void box_pdb(Box *box, std::string path){
     file << std::fixed;
     file << std::setprecision(3);
 
-    std::vector<rigid_molecule> molecules = box->get_molecules();
+    std::vector<rigid_molecule*> molecules = box->get_molecules();
     int molecule_no = molecules.size();
 
     int site_no;
@@ -54,7 +54,7 @@ void box_pdb(Box *box, std::string path){
         //cartesian coordinates
         //loop through site list
 
-        site_no = molecules[i].return_sites_list().size();
+        site_no = molecules[i]->return_sites_list().size();
 
         for (int j = 0; j < site_no; j++){
 
@@ -73,10 +73,10 @@ void box_pdb(Box *box, std::string path){
 
           //insert with spaces for justification, then site_name
           file << white_spaces(2);
-          file << "N" + std::to_string(j);
+          file << "S" + std::to_string(k);
 
           //get site from site list
-          site = (molecules[i].return_sites_list())[j];
+          site = (molecules[i]->return_sites_list())[j];
 
           //get global coordinates from site
           coordinates = site->get_global_coordinates();

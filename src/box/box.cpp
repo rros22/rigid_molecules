@@ -19,7 +19,10 @@ Box::Box(double x, double y, double z, int molecule_no){
   set_dimensions(x, y, z);
 
   //add molecules to vector
-  molecules.assign(molecule_no, water());
+  for (int i = 0; i < molecule_no; i++){
+
+    molecules.push_back(new water());
+  }
 
   //initialise molecule positions randomly
 
@@ -41,10 +44,10 @@ Box::Box(double x, double y, double z, int molecule_no){
 
         //position
         position = {x/side + i*x/side, y/side + j*y/side, z/side + k*z/side};
-        molecules[i + side*(j + side*k)].set_position(position);
+        molecules[i + side*(j + side*k)]->set_position(position);
 
         //orientation
-        molecules[i + side*(j + side*k)].set_orientation(q);
+        molecules[i + side*(j + side*k)]->set_orientation(q);
       }
 
     }
@@ -54,13 +57,23 @@ Box::Box(double x, double y, double z, int molecule_no){
   //calculate site positions from molecule positions and orientations
   for (int i = 0; i < molecule_no; i++){
 
-    molecules[i].set_global_coordinates();
+    molecules[i]->set_global_coordinates();
   }
 
 
 }
 
-std::vector<rigid_molecule> Box::get_molecules(){
+Box::~Box(){
+
+  //free memory from all elements of vector
+  for (auto p : molecules){
+
+    delete p;
+  }
+
+}
+
+std::vector<rigid_molecule*> Box::get_molecules(){
 
   return molecules;
 }

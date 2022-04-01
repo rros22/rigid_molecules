@@ -106,17 +106,19 @@ water::water(){
   q1.set_parameters(-1.04, 0);
 
   //define site coordinates
-  O1_X = {0, 0.65555, 0};
-  H1_X = {-0.9572*sin(52.26), 0.9572*cos(52.26) - 0.65555, 0};
-  H2_X = {0.9572*sin(52.26), 0.9572*cos(52.26) - 0.65555, 0};
 
-  q1_X = {0, 0.15, 0};
+  O1_X = {0, -0.065555, 0};
+  H1_X = {-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
+  H2_X = {0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
+
+  q1_X = {0, 0.15 - 0.065555, 0};
 
   //set site coordinates
   O1.set_local_coordinates(O1_X);
   H1.set_local_coordinates(H1_X);
   H2.set_local_coordinates(H2_X);
   q1.set_local_coordinates(q1_X);
+
 
 }
 

@@ -49,6 +49,7 @@ void box_pdb(Box *box, std::string path){
 
     std::array<double, 3> coordinates;
 
+
     for (int i = 0; i < molecule_no; i++){
 
         //cartesian coordinates

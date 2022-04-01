@@ -9,7 +9,13 @@ int main(){
 
   Box* domain = new Box(100, 100, 100, 3*3*3);
 
-  delete domain;
 
+
+  box_pdb(domain, "results/domain.pdb");
+
+  std::cout << domain->get_molecules().size();
+
+  delete domain;
+  
   return 0;
 }

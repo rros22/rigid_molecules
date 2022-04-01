@@ -29,7 +29,7 @@ protected:
 
 public:
 
-  virtual ~rigid_molecule(){std::cout << "base_destructor" << std::endl;}
+  virtual ~rigid_molecule(){}
 
   void set_position(std::array<double, 3> &CoM);
   void set_orientation(quaternion &Q);
@@ -62,7 +62,7 @@ public:
 
   water();
 
-  ~water() {std::cout << "water_destructor" << std::endl;}
+  ~water() {}
 
   water(std::array<double, 3> CoM, quaternion Q);
 

@@ -36,6 +36,11 @@ std::array<double, 3> site::get_global_coordinates(){
   return this->X;
 }
 
+double site::get_mass(){
+
+  return this->m;
+}
+
 /*
 
 Charge site

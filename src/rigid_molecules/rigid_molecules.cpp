@@ -19,6 +19,23 @@ void rigid_molecule::set_orientation(quaternion &Q){
   this->Q = Q;
 }
 
+void rigid_molecule::set_mass(){
+
+  //reset mass
+  this->m = 0;
+
+  //loop through site list
+  for (int i = 0; i < sites.size(); i++){
+
+    this->m += sites[i]->get_mass();
+  }
+}
+
+double rigid_molecule::get_mass(){
+
+  return this->m;
+}
+
 /*
 
 Water
@@ -93,11 +110,6 @@ water::water(){
   H2.set_symbol("H");
   q1.set_symbol("X");
 
-  //define molecular moments of inertia
-  I[0] = 0.614812;
-  I[1] = 1.154932;
-  I[2] = 1.78001;
-
   //set interaction site parameters
   O1.set_parameters(3.15365, 78*k_b, 15.999);
   H1.set_parameters(0.52, 1.00784);
@@ -118,6 +130,15 @@ water::water(){
   H1.set_local_coordinates(H1_X);
   H2.set_local_coordinates(H2_X);
   q1.set_local_coordinates(q1_X);
+
+  //define molecular mass
+  set_mass();
+
+  //define molecular moments of inertia
+  I[0] = 0.614812;
+  I[1] = 1.154932;
+  I[2] = 1.78001;
+
 
 
 }

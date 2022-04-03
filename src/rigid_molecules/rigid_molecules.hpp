@@ -20,11 +20,17 @@ protected:
   //body frame orientation wrt global frame
   quaternion Q;
 
+  //mass of molecule
+  double m;
+
   //moments of inertia, wrt body frame (Ixx, Iyy, Izz)
   std::array<double, 3> I;
 
   //list of pointers to interaction sites
   std::vector<site*> sites;
+
+  //set molecule mass (cannot vary)
+  void set_mass();
 
 
 public:
@@ -33,6 +39,7 @@ public:
 
   void set_position(std::array<double, 3> &CoM);
   void set_orientation(quaternion &Q);
+  double get_mass();
 
   //methods to be implemented by derived classes
   virtual void set_global_coordinates() = 0;

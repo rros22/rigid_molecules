@@ -10,13 +10,17 @@
 
 int main(){
 
-  Box* domain = new Box(100, 100, 100, 3*3*3);
+  //Box* domain = new Box(100, 100, 100, 3*3*3);
 
 
 
-  box_pdb(domain, "results/domain.pdb");
+  //box_pdb(domain, "results/domain.pdb");
 
-  delete domain;
+  //delete domain;
+
+  rigid_molecule* molecule = new water();
+
+  std::cout << molecule->get_mass() << std::endl;
 
   return 0;
 }

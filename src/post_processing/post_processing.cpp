@@ -108,6 +108,17 @@ void molecule_pdb(rigid_molecule *molecule, int &site_counter, std::string path)
 
 }
 
+void terminate_pbd(std::string path){
+
+  std::ofstream file;
+  file.open(path, std::fstream::app);
+
+  file << "ENDMDL";
+
+  file << std::endl;
+
+}
+
 
 void box_pdb(Box *box, std::string path){
 
@@ -127,12 +138,7 @@ void box_pdb(Box *box, std::string path){
     }
 
     //terminate frame
-    std::ofstream file;
-    file.open(path, std::fstream::app);
-
-    file << "ENDMDL";
-
-    file << std::endl;
+    terminate_pbd(path);
 
     //close file
     //file.close();

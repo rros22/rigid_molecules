@@ -17,7 +17,7 @@ void quaternion::set_axis(std::array<double, 3> &q, double theta){
 std::array<double, 3> quaternion::normalise(std::array<double, 3> &q){
 
   double norm = sqrt(pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
-  return {q[0]/norm, q[1]/norm, q[1]/norm};
+  return {q[0]/norm, q[1]/norm, q[2]/norm};
 }
 
 void quaternion::set_quaternion(double theta, std::array<double, 3> &q){
@@ -33,6 +33,11 @@ void quaternion::set_quaternion(double theta, std::array<double, 3> &q){
 double quaternion::get_angle(){
 
   return 2*acos(this->q0);
+}
+
+double quaternion::get_norm(){
+
+  return sqrt(pow(q0, 2) + pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
 }
 
 std::array<double, 3> quaternion::get_axis(){

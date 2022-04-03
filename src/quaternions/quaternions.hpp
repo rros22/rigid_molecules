@@ -26,6 +26,9 @@ public:
 
   std::array<double, 4> get_parameters();
 
+  double get_norm();
+  
+
 
 };
 

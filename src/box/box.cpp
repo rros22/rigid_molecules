@@ -28,10 +28,10 @@ Box::Box(double x, double y, double z, int molecule_no){
 
   int side = cbrt(molecules.size());
 
-  //define quaternion (1, 1, 1), 45 deg
-  std::array<double, 3> axis = {0, 1, 0};
+  //define quaternion (0, 0, 1), 90 deg, converted to radians
+  std::array<double, 3> axis = {0, 0, 1};
   quaternion q;
-  q.set_quaternion(90, axis);
+  q.set_quaternion(90*M_PI/2, axis);
 
   //define position array
   std::array<double, 3> position;

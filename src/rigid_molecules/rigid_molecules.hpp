@@ -26,6 +26,12 @@ protected:
   //moments of inertia, wrt body frame (Ixx, Iyy, Izz)
   std::array<double, 3> I;
 
+  //center of mass force, in global coordinates
+  std::array<double, 3> F;
+
+  //torque, about principal axes i.e. local coordinates
+  std::array<double, 3> T;
+
   //list of pointers to interaction sites
   std::vector<site*> sites;
 
@@ -41,44 +47,55 @@ public:
   void set_orientation(quaternion &Q);
   double get_mass();
 
+  void set_global_coordinates();
+  std::vector<site*> return_sites_list();
+  std::array<double, 3> return_coordinates_site(int i);
+
   //methods to be implemented by derived classes
-  virtual void set_global_coordinates() = 0;
-  virtual std::array<double, 3> return_coordinates_site(int i) = 0;
-  virtual std::vector<site*> return_sites_list() = 0;
+
 
 };
 
-class water: public rigid_molecule{
+class H2O: public rigid_molecule{
 
 private:
 
   //interaction sites (atoms and dummy charges)
-  lj_site O1;
-  charge H1;
-  charge H2;
+  lj_site O_1;
+  charge H_1;
+  charge H_2;
 
-  charge q1;
-
-  //local coordinates of sites
-  std::array<double, 3> O1_X;
-  std::array<double, 3> H1_X;
-  std::array<double, 3> H2_X;
-  std::array<double, 3> q1_X;
+  charge q_1;
 
 public:
 
-  water();
+  H2O();
 
-  ~water() {}
+  ~H2O() {}
 
-  water(std::array<double, 3> CoM, quaternion Q);
+  H2O(std::array<double, 3> CoM, quaternion Q);
 
-  void set_global_coordinates();
+};
 
-  std::array<double, 3> return_coordinates_site(int i);
+class N2: public rigid_molecule{
 
-  std::vector<site*> return_sites_list();
+  //interaction sites
+  lj_site N_1;
+  lj_site N_2;
 
+  charge q_1;
+
+  //local coordinates of sites
+  std::array<double, 3> N1_X;
+  std::array<double, 3> N2_X;
+
+public:
+
+  N2();
+
+  ~N2() {};
+
+  N2(std::array<double, 3> CoM, quaternion Q);
 
 };
 

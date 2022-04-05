@@ -74,7 +74,7 @@ void molecule_pdb(rigid_molecule *molecule, int &site_counter, std::string path)
     site = (molecule->return_sites_list())[j];
 
     //get global coordinates from site
-    coordinates = site->get_global_coordinates();
+    coordinates = molecule->return_coordinates_site(j);
 
     //get length of each coordinate
     x_len = to_string(coordinates[0]).size();

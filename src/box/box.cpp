@@ -19,9 +19,14 @@ Box::Box(double x, double y, double z, int molecule_no){
   set_dimensions(x, y, z);
 
   //add molecules to vector
-  for (int i = 0; i < molecule_no; i++){
+  for (int i = 0; i < molecule_no/2; i++){
 
-    molecules.push_back(new water());
+    molecules.push_back(new H2O());
+  }
+
+  for (int i = molecule_no/2; i < molecule_no; i++){
+
+    molecules.push_back(new N2());
   }
 
   //initialise molecule positions randomly
@@ -29,9 +34,9 @@ Box::Box(double x, double y, double z, int molecule_no){
   int side = cbrt(molecules.size());
 
   //define quaternion (0, 0, 1), 90 deg, converted to radians
-  std::array<double, 3> axis = {0, 0, 1};
+  std::array<double, 3> axis = {1, 0, 0};
   quaternion q;
-  q.set_quaternion(90*M_PI/2, axis);
+  q.set_quaternion(90*M_PI/180, axis);
 
   //define position array
   std::array<double, 3> position;

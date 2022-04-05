@@ -36,100 +36,86 @@ double rigid_molecule::get_mass(){
   return this->m;
 }
 
-/*
+void rigid_molecule::set_global_coordinates(){
 
-Water
-
-*/
-
-void water::set_global_coordinates(){
-
-  //oxygen atom
   //rotate local coordinates to molecule orientation
   rot_matrix rotation(this->Q);
-  std::array<double, 3> global = rotation.matrix_vector(O1.get_local_coordinates());
 
-  //add center of mass position
-  for (int i = 0; i < 3; i++){
+  //store global coordinates, and intermediate states of calculation
+  std::array<double, 3> global;
 
-    global[i] = global[i] + CoM[i];
+  //loop through all sites in molecules
+  for (int i = 0; i < sites.size(); i++){
+
+    //tranform local coordinates according to molecule orientation
+    global = rotation.matrix_vector(sites[i]->get_local_coordinates());
+
+    //offset by center of mass position
+    for (int j = 0; j < 3; j++){
+
+      global[j] += CoM[j];
+    }
+
+    //set global coordinate of site
+    sites[i]->set_global_coordinates(global);
+
+  }
+}
+
+std::vector<site*> rigid_molecule::return_sites_list(){
+
+  return sites;
+}
+
+std::array<double, 3> rigid_molecule::return_coordinates_site(int i){
+
+  if (i >= 0 && i < sites.size()){
+
+    return sites[i]->get_global_coordinates();
+
   }
 
-  O1.set_global_coordinates(global);
+  else{
 
-  //hydrogen atom 1
-  //rotate local coordinates to molecule orientation
-  global = rotation.matrix_vector(H1.get_local_coordinates());
+    std::cout << "Index i is out of bounds: cannot return site." << std::endl;
 
-  //add center of mass position
-  for (int i = 0; i < 3; i++){
-
-    global[i] = global[i] + CoM[i];
+    return {0, 0, 0};
   }
-
-  H1.set_global_coordinates(global);
-
-  //hydrogen atom 2
-  //rotate local coordinates to molecule orientation
-  global = rotation.matrix_vector(H2.get_local_coordinates());
-
-  //add center of mass position
-  for (int i = 0; i < 3; i++){
-
-    global[i] = global[i] + CoM[i];
-  }
-
-  H2.set_global_coordinates(global);
-
-  //dummy charge
-  //rotate local coordinates to molecule orientation
-  global = rotation.matrix_vector(q1.get_local_coordinates());
-
-  //add center of mass position
-  for (int i = 0; i < 3; i++){
-
-    global[i] = global[i] + CoM[i];
-  }
-
-  q1.set_global_coordinates(global);
-
 
 }
 
-water::water(){
+/*
+
+H2O
+
+*/
+
+H2O::H2O(){
 
   //define interaction site pointer array
-  sites.push_back(&O1);
-  sites.push_back(&H1);
-  sites.push_back(&H2);
-  sites.push_back(&q1);
+  sites.push_back(&O_1);
+  sites.push_back(&H_1);
+  sites.push_back(&H_2);
+  sites.push_back(&q_1);
 
   //set site names
-  O1.set_symbol("O");
-  H1.set_symbol("H");
-  H2.set_symbol("H");
-  q1.set_symbol("X");
+  O_1.set_symbol("O");
+  H_1.set_symbol("H");
+  H_2.set_symbol("H");
+  q_1.set_symbol("X");
 
   //set interaction site parameters
-  O1.set_parameters(3.15365, 78*k_b, 15.999);
-  H1.set_parameters(0.52, 1.00784);
-  H2.set_parameters(0.52, 1.00784);
+  O_1.set_parameters(3.15365, 78*k_b, 15.999);
+  H_1.set_parameters(0.52, 1.00784);
+  H_2.set_parameters(0.52, 1.00784);
 
-  q1.set_parameters(-1.04, 0);
-
-  //define site coordinates
-
-  O1_X = {0, -0.065555, 0};
-  H1_X = {-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
-  H2_X = {0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
-
-  q1_X = {0, 0.15 - 0.065555, 0};
+  q_1.set_parameters(-1.04, 0);
 
   //set site coordinates
-  O1.set_local_coordinates(O1_X);
-  H1.set_local_coordinates(H1_X);
-  H2.set_local_coordinates(H2_X);
-  q1.set_local_coordinates(q1_X);
+  O_1.set_local_coordinates({0, -0.065555, 0});
+  H_1.set_local_coordinates({-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
+  H_2.set_local_coordinates({0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
+  q_1.set_local_coordinates({0, 0.15 - 0.065555, 0});
 
   //define molecular mass
   set_mass();
@@ -143,7 +129,7 @@ water::water(){
 
 }
 
-water::water(std::array<double, 3> CoM, quaternion Q): water(){
+H2O::H2O(std::array<double, 3> CoM, quaternion Q): H2O(){
 
     set_position(CoM);
     set_orientation(Q);
@@ -151,13 +137,38 @@ water::water(std::array<double, 3> CoM, quaternion Q): water(){
     set_global_coordinates();
 }
 
-std::array<double, 3> water::return_coordinates_site(int i){
+/*
 
-  return sites[i]->get_global_coordinates();
+N2
 
-}
+*/
 
-std::vector<site*> water::return_sites_list(){
+N2::N2(){
 
-  return sites;
+  //define interaction site pointer array
+  sites.push_back(&N_1);
+  sites.push_back(&N_2);
+
+  //for debugging purposes
+  sites.push_back(&q_1);
+
+  //set site names
+  N_1.set_symbol("N");
+  N_2.set_symbol("N");
+
+  //set interaction site parameters
+  N_1.set_parameters(3.17, 78*k_b, 14.0067);
+  N_2.set_parameters(3.17, 78*k_b, 14.0067);
+
+  //set site coordinates
+  N_1.set_local_coordinates({0, -0.545, 0});
+  N_2.set_local_coordinates({0, 0.545, 0});
+
+  //define molecular mass
+  set_mass();
+
+  //define molecular moments of inertia
+  I[0] = 8.32068;
+  I[1] = 0;
+  I[2] = 8.32068;
 }

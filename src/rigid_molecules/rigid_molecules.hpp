@@ -35,8 +35,14 @@ protected:
   //list of pointers to interaction sites
   std::vector<site*> sites;
 
+  //name
+  std::string symbol;
+
   //set molecule mass (cannot vary)
   void set_mass();
+
+  //private methods to be accessed by constructor or member methods
+  void set_symbol(std::string symbol);
 
 
 public:
@@ -46,13 +52,16 @@ public:
   void set_position(std::array<double, 3> &CoM);
   void set_orientation(quaternion &Q);
   double get_mass();
+  std::string get_symbol();
 
   void set_global_coordinates();
   std::vector<site*> return_sites_list();
   std::array<double, 3> return_coordinates_site(int i);
+  void reset_CoM_force();
+  void set_CoM_force();
 
   //methods to be implemented by derived classes
-
+  virtual void set_forces(rigid_molecule *molecule) = 0;
 
 };
 
@@ -75,6 +84,9 @@ public:
 
   H2O(std::array<double, 3> CoM, quaternion Q);
 
+  //forces
+  void set_forces(rigid_molecule *molecule);
+
 };
 
 class N2: public rigid_molecule{
@@ -96,6 +108,9 @@ public:
   ~N2() {};
 
   N2(std::array<double, 3> CoM, quaternion Q);
+
+  //forces
+  void set_forces(rigid_molecule *molecule){}
 
 };
 

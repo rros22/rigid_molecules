@@ -8,6 +8,10 @@
 Rigid molecule
 
 */
+void rigid_molecule::set_symbol(std::string symbol){
+
+  this->symbol = symbol;
+}
 
 void rigid_molecule::set_position(std::array<double, 3> &CoM){
 
@@ -34,6 +38,11 @@ void rigid_molecule::set_mass(){
 double rigid_molecule::get_mass(){
 
   return this->m;
+}
+
+std::string rigid_molecule::get_symbol(){
+
+  return symbol;
 }
 
 void rigid_molecule::set_global_coordinates(){
@@ -84,6 +93,36 @@ std::array<double, 3> rigid_molecule::return_coordinates_site(int i){
 
 }
 
+void rigid_molecule::reset_CoM_force(){
+
+  F[0] = 0;
+  F[1] = 0;
+  F[2] = 0;
+}
+
+void rigid_molecule::set_CoM_force(){
+
+  //reset previous CoM force
+  reset_CoM_force();
+
+  //temp array to store contributions of sites
+  std::array<double, 3> forces;
+
+  //add contributions from every site
+  for (int i = 0; i < sites.size(); i++){
+
+    //obtain forces from each site
+    forces = sites[i]->get_forces();
+
+    //add (Fx, Fy, Fz) contributions from every site (vector addition)
+    F[0] += forces[0];
+    F[1] += forces[1];
+    F[2] += forces[2];
+
+  }
+
+}
+
 /*
 
 H2O
@@ -91,6 +130,9 @@ H2O
 */
 
 H2O::H2O(){
+
+  //set molecule symbol
+  set_symbol("H2O");
 
   //define interaction site pointer array
   sites.push_back(&O_1);
@@ -137,6 +179,58 @@ H2O::H2O(std::array<double, 3> CoM, quaternion Q): H2O(){
     set_global_coordinates();
 }
 
+void H2O::set_forces(rigid_molecule *molecule){
+
+  //get list of interaction sites
+  std::vector<site*> sites = molecule->return_sites_list();
+
+  //reset forces
+  for (int i = 0; i < sites.size(); i++){
+
+    sites[i]->reset_forces();
+  }
+
+  //select between different child classes
+  if (molecule->get_symbol() == "H2O"){
+
+    //H2O *h2o = (H2O *) molecule;
+
+    //forces on oxygen atom
+    O_1.calculate_forces((lj_site *) sites[0]);
+
+    //forces on hydrogen atom 1
+    H_1.calculate_forces((charge *) sites[1]);
+    H_1.calculate_forces((charge *) sites[2]);
+    H_1.calculate_forces((charge *) sites[3]);
+
+    //forces on hydrogen atom 2
+    H_2.calculate_forces((charge *) sites[1]);
+    H_2.calculate_forces((charge *) sites[2]);
+    H_2.calculate_forces((charge *) sites[3]);
+
+    //forces on dummy charge
+    q_1.calculate_forces((charge *) sites[1]);
+    q_1.calculate_forces((charge *) sites[2]);
+    q_1.calculate_forces((charge *) sites[3]);
+
+    //calculate force on CoM
+    set_CoM_force();
+
+  }
+
+  else if (molecule->get_symbol() == "N2"){
+
+    //forces on oxygen atom
+    O_1.calculate_forces((lj_site *) sites[0]);
+    O_1.calculate_forces((lj_site *) sites[1]);
+
+    //calculate force on CoM
+    set_CoM_force();
+
+  }
+
+}
+
 /*
 
 N2
@@ -144,6 +238,9 @@ N2
 */
 
 N2::N2(){
+
+  //set molecule symbol
+  set_symbol("N2");
 
   //define interaction site pointer array
   sites.push_back(&N_1);
@@ -171,4 +268,12 @@ N2::N2(){
   I[0] = 8.32068;
   I[1] = 0;
   I[2] = 8.32068;
+}
+
+N2::N2(std::array<double, 3> CoM, quaternion Q): N2(){
+
+    set_position(CoM);
+    set_orientation(Q);
+
+    set_global_coordinates();
 }

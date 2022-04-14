@@ -61,9 +61,12 @@ public:
   void set_CoM_force();
 
   //methods to be implemented by derived classes
-  virtual void set_forces(rigid_molecule *molecule) = 0;
+  //virtual void set_forces(rigid_molecule *molecule) = 0;
 
 };
+
+//forward declaration
+class N2;
 
 class H2O: public rigid_molecule{
 
@@ -85,7 +88,8 @@ public:
   H2O(std::array<double, 3> CoM, quaternion Q);
 
   //forces
-  void set_forces(rigid_molecule *molecule);
+  void set_forces(H2O &water);
+  void set_forces(N2 &nitrogen2);
 
 };
 
@@ -110,7 +114,8 @@ public:
   N2(std::array<double, 3> CoM, quaternion Q);
 
   //forces
-  void set_forces(rigid_molecule *molecule){}
+  void set_forces(H2O &water);
+  void set_forces(N2 &nitrogen2);
 
 };
 

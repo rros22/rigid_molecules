@@ -10,7 +10,7 @@
 
 int main(){
 
-  Box* domain = new Box(100, 100, 100, 3*3*3);
+  Box* domain = new Box(100, 100, 100, 14, 13);
 
 
 

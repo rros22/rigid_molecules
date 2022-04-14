@@ -179,10 +179,20 @@ H2O::H2O(std::array<double, 3> CoM, quaternion Q): H2O(){
     set_global_coordinates();
 }
 
-void H2O::set_forces(rigid_molecule *molecule){
+
+
+
+
+
+
+
+
+
+
+void H2O::set_forces(H2O &water){
 
   //get list of interaction sites
-  std::vector<site*> sites = molecule->return_sites_list();
+  std::vector<site*> sites = water.return_sites_list();
 
   //reset forces
   for (int i = 0; i < sites.size(); i++){
@@ -190,44 +200,46 @@ void H2O::set_forces(rigid_molecule *molecule){
     sites[i]->reset_forces();
   }
 
-  //select between different child classes
-  if (molecule->get_symbol() == "H2O"){
+  //forces on oxygen atom
+  O_1.calculate_forces((lj_site *) sites[0]);
 
-    //H2O *h2o = (H2O *) molecule;
+  //forces on hydrogen atom 1
+  H_1.calculate_forces((charge *) sites[1]);
+  H_1.calculate_forces((charge *) sites[2]);
+  H_1.calculate_forces((charge *) sites[3]);
 
-    //forces on oxygen atom
-    O_1.calculate_forces((lj_site *) sites[0]);
+  //forces on hydrogen atom 2
+  H_2.calculate_forces((charge *) sites[1]);
+  H_2.calculate_forces((charge *) sites[2]);
+  H_2.calculate_forces((charge *) sites[3]);
 
-    //forces on hydrogen atom 1
-    H_1.calculate_forces((charge *) sites[1]);
-    H_1.calculate_forces((charge *) sites[2]);
-    H_1.calculate_forces((charge *) sites[3]);
+  //forces on dummy charge
+  q_1.calculate_forces((charge *) sites[1]);
+  q_1.calculate_forces((charge *) sites[2]);
+  q_1.calculate_forces((charge *) sites[3]);
 
-    //forces on hydrogen atom 2
-    H_2.calculate_forces((charge *) sites[1]);
-    H_2.calculate_forces((charge *) sites[2]);
-    H_2.calculate_forces((charge *) sites[3]);
+  //calculate force on CoM
+  set_CoM_force();
 
-    //forces on dummy charge
-    q_1.calculate_forces((charge *) sites[1]);
-    q_1.calculate_forces((charge *) sites[2]);
-    q_1.calculate_forces((charge *) sites[3]);
+}
 
-    //calculate force on CoM
-    set_CoM_force();
+void H2O::set_forces(N2 &nitrogen2){
 
+  //get list of interaction sites
+  std::vector<site*> sites = nitrogen2.return_sites_list();
+
+  //reset forces
+  for (int i = 0; i < sites.size(); i++){
+
+    sites[i]->reset_forces();
   }
 
-  else if (molecule->get_symbol() == "N2"){
+  //forces on oxygen atom
+  O_1.calculate_forces((lj_site *) sites[0]);
+  O_1.calculate_forces((lj_site *) sites[1]);
 
-    //forces on oxygen atom
-    O_1.calculate_forces((lj_site *) sites[0]);
-    O_1.calculate_forces((lj_site *) sites[1]);
-
-    //calculate force on CoM
-    set_CoM_force();
-
-  }
+  //calculate force on CoM
+  set_CoM_force();
 
 }
 

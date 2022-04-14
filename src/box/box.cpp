@@ -13,24 +13,27 @@ void Box::set_dimensions(double x, double y, double z){
   this->X = {x, y, z};
 }
 
-Box::Box(double x, double y, double z, int molecule_no){
+Box::Box(double x, double y, double z, int water_no, int nitrogen2_no){
 
   //set box dimensions
   set_dimensions(x, y, z);
 
-  //add molecules to vector
-  for (int i = 0; i < molecule_no/2; i++){
+  //add molecules
+  water_molecules.assign(water_no, H2O());
+  nitrogen2_molecules.assign(nitrogen2_no, N2());
 
-    molecules.push_back(new H2O());
+  //allocate vector of molecules
+  for (int i = 0; i < water_no; i++){
+
+    molecules.push_back(&(water_molecules[i]));
   }
 
-  for (int i = molecule_no/2; i < molecule_no; i++){
+  for (int i = 0; i < nitrogen2_no; i++){
 
-    molecules.push_back(new N2());
+    molecules.push_back(&(nitrogen2_molecules[i]));
   }
 
   //initialise molecule positions randomly
-
   int side = cbrt(molecules.size());
 
   //define quaternion (0, 0, 1), 90 deg, converted to radians
@@ -60,7 +63,7 @@ Box::Box(double x, double y, double z, int molecule_no){
   }
 
   //calculate site positions from molecule positions and orientations
-  for (int i = 0; i < molecule_no; i++){
+  for (int i = 0; i < molecules.size(); i++){
 
     molecules[i]->set_global_coordinates();
   }
@@ -69,12 +72,6 @@ Box::Box(double x, double y, double z, int molecule_no){
 }
 
 Box::~Box(){
-
-  //free memory from all elements of vector
-  for (auto p : molecules){
-
-    delete p;
-  }
 
 }
 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <array>
+#include <memory>
 
 class site{
 
@@ -31,6 +32,11 @@ protected:
 
 public:
 
+  site();
+
+  //constructor initialise m
+  site(double m): m(m) {}
+
   void set_symbol(std::string symbol);
 
   void set_local_coordinates(std::array<double, 3> X_l);
@@ -45,6 +51,8 @@ public:
   void add_forces(std::array<double, 3> F);
   void reset_forces();
 
+  virtual void calculate_forces(std::shared_ptr<site> site) = 0;
+
 };
 
 class atom: public site{
@@ -58,12 +66,17 @@ class charge: public site{
 
 public:
 
+  charge();
+
+  charge(double q, double m): site(m), q(q) {}
+
   double get_charge();
 
   void set_parameters(double q, double m);
 
+  void calculate_forces(std::shared_ptr<site> site){}
 
-  void calculate_forces(charge *charge);
+  //void calculate_forces(charge *charge);
 
 };
 
@@ -75,10 +88,16 @@ class lj_site: public site{
 
 public:
 
+  lj_site();
+
+  lj_site(double sigma, double epsilon, double m): site(m), sigma(sigma), epsilon(epsilon) {}
+
   void set_parameters(double sigma, double epsilon, double m);
   void set_forces(){}
 
-  void calculate_forces(lj_site *lj_site);
+  void calculate_forces(std::shared_ptr<site> site){}
+
+  //void calculate_forces(lj_site *lj_site);
 };
 
 #endif

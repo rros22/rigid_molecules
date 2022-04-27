@@ -71,7 +71,7 @@ void rigid_molecule::set_global_coordinates(){
   }
 }
 
-std::vector<site*> rigid_molecule::return_sites_list(){
+std::vector<std::shared_ptr<site>> rigid_molecule::return_sites_list(){
 
   return sites;
 }
@@ -134,30 +134,30 @@ H2O::H2O(){
   //set molecule symbol
   set_symbol("H2O");
 
-  //define interaction site pointer array
-  sites.push_back(&O_1);
-  sites.push_back(&H_1);
-  sites.push_back(&H_2);
-  sites.push_back(&q_1);
+  //define interaction sites
+  sites.emplace_back(new lj_site(3.15365, 78*k_b, 15.999));
+  sites.emplace_back(new charge(0.52, 1.00784));
+  sites.emplace_back(new charge(0.52, 1.00784));
+  sites.emplace_back(new charge(-1.04, 0));
 
   //set site names
-  O_1.set_symbol("O");
-  H_1.set_symbol("H");
-  H_2.set_symbol("H");
-  q_1.set_symbol("X");
+  sites[0]->set_symbol("O");
+  sites[1]->set_symbol("H");
+  sites[2]->set_symbol("H");
+  sites[3]->set_symbol("X");
 
   //set interaction site parameters
-  O_1.set_parameters(3.15365, 78*k_b, 15.999);
-  H_1.set_parameters(0.52, 1.00784);
-  H_2.set_parameters(0.52, 1.00784);
+  //sites[0]->set_parameters(3.15365, 78*k_b, 15.999);
+  //sites[1]->set_parameters(0.52, 1.00784);
+  //sites[2]->set_parameters(0.52, 1.00784);
 
-  q_1.set_parameters(-1.04, 0);
+  //sites[3]->set_parameters(-1.04, 0);
 
   //set site coordinates
-  O_1.set_local_coordinates({0, -0.065555, 0});
-  H_1.set_local_coordinates({-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
-  H_2.set_local_coordinates({0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
-  q_1.set_local_coordinates({0, 0.15 - 0.065555, 0});
+  sites[0]->set_local_coordinates({0, -0.065555, 0});
+  sites[1]->set_local_coordinates({-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
+  sites[2]->set_local_coordinates({0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
+  sites[3]->set_local_coordinates({0, 0.15 - 0.065555, 0});
 
   //define molecular mass
   set_mass();
@@ -178,7 +178,7 @@ H2O::H2O(std::array<double, 3> CoM, quaternion Q): H2O(){
 
     set_global_coordinates();
 }
-
+/*
 void H2O::set_forces(rigid_molecule *molecule){
 
   //get list of interaction sites
@@ -196,22 +196,22 @@ void H2O::set_forces(rigid_molecule *molecule){
     //H2O *h2o = (H2O *) molecule;
 
     //forces on oxygen atom
-    O_1.calculate_forces((lj_site *) sites[0]);
+    sites[0]->calculate_forces((lj_site *) sites[0]);
 
     //forces on hydrogen atom 1
-    H_1.calculate_forces((charge *) sites[1]);
-    H_1.calculate_forces((charge *) sites[2]);
-    H_1.calculate_forces((charge *) sites[3]);
+    sites[1]->calculate_forces((charge *) sites[1]);
+    sites[1]->calculate_forces((charge *) sites[2]);
+    sites[1]->calculate_forces((charge *) sites[3]);
 
     //forces on hydrogen atom 2
-    H_2.calculate_forces((charge *) sites[1]);
-    H_2.calculate_forces((charge *) sites[2]);
-    H_2.calculate_forces((charge *) sites[3]);
+    sites[2]->calculate_forces((charge *) sites[1]);
+    sites[2]->calculate_forces((charge *) sites[2]);
+    sites[2]->calculate_forces((charge *) sites[3]);
 
     //forces on dummy charge
-    q_1.calculate_forces((charge *) sites[1]);
-    q_1.calculate_forces((charge *) sites[2]);
-    q_1.calculate_forces((charge *) sites[3]);
+    sites[3]->calculate_forces((charge *) sites[1]);
+    sites[3]->calculate_forces((charge *) sites[2]);
+    sites[3]->calculate_forces((charge *) sites[3]);
 
     //calculate force on CoM
     set_CoM_force();
@@ -221,8 +221,8 @@ void H2O::set_forces(rigid_molecule *molecule){
   else if (molecule->get_symbol() == "N2"){
 
     //forces on oxygen atom
-    O_1.calculate_forces((lj_site *) sites[0]);
-    O_1.calculate_forces((lj_site *) sites[1]);
+    sites[0]->calculate_forces((lj_site *) sites[0]);
+    sites[0]->calculate_forces((lj_site *) sites[1]);
 
     //calculate force on CoM
     set_CoM_force();
@@ -230,6 +230,7 @@ void H2O::set_forces(rigid_molecule *molecule){
   }
 
 }
+*/
 
 /*
 
@@ -243,23 +244,23 @@ N2::N2(){
   set_symbol("N2");
 
   //define interaction site pointer array
-  sites.push_back(&N_1);
-  sites.push_back(&N_2);
+  sites.emplace_back(new lj_site(3.17, 78*k_b, 14.0067));
+  sites.emplace_back(new lj_site(3.17, 78*k_b, 14.0067));
 
   //for debugging purposes
-  sites.push_back(&q_1);
+  sites.emplace_back(new charge(0, 0));
 
   //set site names
-  N_1.set_symbol("N");
-  N_2.set_symbol("N");
+  sites[0]->set_symbol("N");
+  sites[1]->set_symbol("N");
 
   //set interaction site parameters
-  N_1.set_parameters(3.17, 78*k_b, 14.0067);
-  N_2.set_parameters(3.17, 78*k_b, 14.0067);
+  //sites[0]->set_parameters(3.17, 78*k_b, 14.0067);
+  //sites[1]->set_parameters(3.17, 78*k_b, 14.0067);
 
   //set site coordinates
-  N_1.set_local_coordinates({0, -0.545, 0});
-  N_2.set_local_coordinates({0, 0.545, 0});
+  sites[0]->set_local_coordinates({0, -0.545, 0});
+  sites[1]->set_local_coordinates({0, 0.545, 0});
 
   //define molecular mass
   set_mass();

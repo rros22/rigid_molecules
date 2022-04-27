@@ -1,5 +1,5 @@
 #include "sites.hpp"
-
+#include <cmath>
 /*
 
 Site
@@ -76,7 +76,7 @@ void charge::set_parameters(double q, double m){
   this->q = q;
   this->m = m;
 }
-
+/*
 void charge::calculate_forces(charge *charge){
 
   //define dielectric constant
@@ -108,6 +108,7 @@ void charge::calculate_forces(charge *charge){
   charge->add_forces(F_2);
 
 }
+*/
 
 /*
 
@@ -121,7 +122,7 @@ void lj_site::set_parameters(double sigma, double epsilon, double m){
   this->epsilon = epsilon;
   this->m = m;
 }
-
+/*
 void lj_site::calculate_forces(lj_site *lj_site){
 
   //define lennard jones parameters
@@ -149,3 +150,4 @@ void lj_site::calculate_forces(lj_site *lj_site){
   this->add_forces(F_1);
   lj_site->add_forces(F_2);
 }
+*/

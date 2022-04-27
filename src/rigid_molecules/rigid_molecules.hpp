@@ -4,6 +4,7 @@
 #include <array>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 #include "../sites/sites.hpp"
 #include "../quaternions/quaternions.hpp"
@@ -32,8 +33,8 @@ protected:
   //torque, about principal axes i.e. local coordinates
   std::array<double, 3> T;
 
-  //list of pointers to interaction sites
-  std::vector<site*> sites;
+  //list of interaction sites to interaction sites
+  std::vector<std::shared_ptr<site>> sites;
 
   //name
   std::string symbol;
@@ -55,7 +56,7 @@ public:
   std::string get_symbol();
 
   void set_global_coordinates();
-  std::vector<site*> return_sites_list();
+  std::vector<std::shared_ptr<site>> return_sites_list();
   std::array<double, 3> return_coordinates_site(int i);
   void reset_CoM_force();
   void set_CoM_force();
@@ -67,14 +68,7 @@ public:
 
 class H2O: public rigid_molecule{
 
-private:
-
-  //interaction sites (atoms and dummy charges)
-  lj_site O_1;
-  charge H_1;
-  charge H_2;
-
-  charge q_1;
+  //interaction sites allocated by constructor on sites vector (atoms and dummy charges)
 
 public:
 
@@ -85,21 +79,13 @@ public:
   H2O(std::array<double, 3> CoM, quaternion Q);
 
   //forces
-  void set_forces(rigid_molecule *molecule);
+  void set_forces(rigid_molecule *molecule){};
 
 };
 
 class N2: public rigid_molecule{
 
-  //interaction sites
-  lj_site N_1;
-  lj_site N_2;
 
-  charge q_1;
-
-  //local coordinates of sites
-  std::array<double, 3> N1_X;
-  std::array<double, 3> N2_X;
 
 public:
 

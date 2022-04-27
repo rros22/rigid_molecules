@@ -1,5 +1,6 @@
 #include "post_processing.hpp"
 #include <iomanip>
+#include <memory>
 
 std::string to_string(double angstroms){
 
@@ -35,7 +36,7 @@ void molecule_pdb(rigid_molecule *molecule, int &site_counter, std::string path)
   int site_no = molecule->return_sites_list().size();
 
   //molecule sites pointer, to current site
-  site *site;
+  std::shared_ptr<site> site;
 
   //lenght of field parameters
   int no_len;

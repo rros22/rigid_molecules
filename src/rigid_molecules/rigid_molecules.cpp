@@ -8,26 +8,21 @@
 Rigid molecule
 
 */
-void rigid_molecule::set_symbol(std::string symbol){
-
-  this->symbol = symbol;
-}
-
-void rigid_molecule::set_position(std::array<double, 3> &CoM){
-
+//setter functions
+void rigid_molecule::set_position(std::array<double, 3> &CoM)
+{
   this->CoM = CoM;
 }
 
-void rigid_molecule::set_orientation(quaternion &Q){
-
+void rigid_molecule::set_orientation(quaternion &Q)
+{
   this->Q = Q;
 }
 
-void rigid_molecule::set_mass(){
-
+void rigid_molecule::set_mass()
+{
   //reset mass
   this->m = 0;
-
   //loop through site list
   for (int i = 0; i < sites.size(); i++){
 
@@ -35,12 +30,27 @@ void rigid_molecule::set_mass(){
   }
 }
 
+void rigid_molecule::set_mom_inertia(std::array<double, 3> I)
+{
+  this->I = I;
+}
+
+void rigid_molecule::set_symbol(std::string symbol)
+{
+  this->symbol = symbol;
+}
+
 double rigid_molecule::get_mass(){
 
   return this->m;
 }
 
-std::string rigid_molecule::get_symbol(){
+const std::vector<std::shared_ptr<site>>& rigid_molecule::get_sites(){
+
+  return sites;
+}
+
+const std::string& rigid_molecule::get_symbol(){
 
   return symbol;
 }
@@ -57,7 +67,7 @@ void rigid_molecule::set_global_coordinates(){
   for (int i = 0; i < sites.size(); i++){
 
     //tranform local coordinates according to molecule orientation
-    global = rotation.matrix_vector(sites[i]->get_local_coordinates());
+    global = rotation * (sites[i]->get_local_coordinates());
 
     //offset by center of mass position
     for (int j = 0; j < 3; j++){
@@ -71,10 +81,6 @@ void rigid_molecule::set_global_coordinates(){
   }
 }
 
-std::vector<std::shared_ptr<site>> rigid_molecule::return_sites_list(){
-
-  return sites;
-}
 
 std::array<double, 3> rigid_molecule::return_coordinates_site(int i){
 
@@ -93,12 +99,7 @@ std::array<double, 3> rigid_molecule::return_coordinates_site(int i){
 
 }
 
-void rigid_molecule::reset_CoM_force(){
 
-  F[0] = 0;
-  F[1] = 0;
-  F[2] = 0;
-}
 
 void rigid_molecule::set_CoM_force(){
 
@@ -112,7 +113,7 @@ void rigid_molecule::set_CoM_force(){
   for (int i = 0; i < sites.size(); i++){
 
     //obtain forces from each site
-    forces = sites[i]->get_forces();
+    forces = sites[i]->get_force();
 
     //add (Fx, Fy, Fz) contributions from every site (vector addition)
     F[0] += forces[0];
@@ -121,6 +122,13 @@ void rigid_molecule::set_CoM_force(){
 
   }
 
+}
+
+void rigid_molecule::reset_CoM_force(){
+
+  F[0] = 0;
+  F[1] = 0;
+  F[2] = 0;
 }
 
 /*
@@ -135,10 +143,10 @@ H2O::H2O(){
   set_symbol("H2O");
 
   //define interaction sites
-  sites.emplace_back(new lj_site(3.15365, 78*k_b, 15.999));
-  sites.emplace_back(new charge(0.52, 1.00784));
-  sites.emplace_back(new charge(0.52, 1.00784));
-  sites.emplace_back(new charge(-1.04, 0));
+  sites.push_back(std::make_shared<lj_site> (3.15365, 78*k_b, 15.999));
+  sites.push_back(std::make_shared<charge> (0.52, 1.00784));
+  sites.push_back(std::make_shared<charge> (0.52, 1.00784));
+  sites.push_back(std::make_shared<charge> (-1.04, 0));
 
   //set site names
   sites[0]->set_symbol("O");
@@ -244,11 +252,11 @@ N2::N2(){
   set_symbol("N2");
 
   //define interaction site pointer array
-  sites.emplace_back(new lj_site(3.17, 78*k_b, 14.0067));
-  sites.emplace_back(new lj_site(3.17, 78*k_b, 14.0067));
+  sites.push_back(std::make_shared<lj_site> (3.17, 78*k_b, 14.0067));
+  sites.push_back(std::make_shared<lj_site> (3.17, 78*k_b, 14.0067));
 
   //for debugging purposes
-  sites.emplace_back(new charge(0, 0));
+  sites.push_back(std::make_shared<charge> (0, 0));
 
   //set site names
   sites[0]->set_symbol("N");

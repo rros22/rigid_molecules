@@ -1,14 +1,14 @@
 #include "quaternions.hpp"
 #include <cmath>
 
-
-void quaternion::set_angle(double theta){
-
+//setter functions
+void quaternion::set_angle(double theta)
+{
   this->q0 = cos(theta/2);
 }
 
-void quaternion::set_axis(std::array<double, 3> &q, double theta){
-
+void quaternion::set_axis(std::array<double, 3> &q, double theta)
+{
   (this->q)[0] = sin(theta/2)*q[0];
   (this->q)[1] = sin(theta/2)*q[1];
   (this->q)[2] = sin(theta/2)*q[2];
@@ -20,8 +20,8 @@ std::array<double, 3> quaternion::normalise(std::array<double, 3> &q){
   return {q[0]/norm, q[1]/norm, q[2]/norm};
 }
 
-void quaternion::set_quaternion(double theta, std::array<double, 3> &q){
-
+void quaternion::set_quaternion(double theta, std::array<double, 3> &q)
+{
   //normalise direction
   std::array<double, 3> u = normalise(q);
 
@@ -30,25 +30,27 @@ void quaternion::set_quaternion(double theta, std::array<double, 3> &q){
   set_angle(theta);
 }
 
-double quaternion::get_angle(){
-
+//getter functions
+double quaternion::get_angle()
+{
   return 2*acos(this->q0);
 }
 
-double quaternion::get_norm(){
-
-  return sqrt(pow(q0, 2) + pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
-}
-
-std::array<double, 3> quaternion::get_axis(){
-
+const std::array<double, 3>& quaternion::get_axis()
+{
   return this->q;
 }
 
-std::array<double, 4> quaternion::get_parameters(){
-
+std::array<double, 4> quaternion::get_parameters()
+{
   return {q0, q[0], q[1], q[2]};
 }
+
+double quaternion::get_norm()
+{
+  return sqrt(pow(q0, 2) + pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
+}
+
 
 
 /*
@@ -83,8 +85,8 @@ rot_matrix::rot_matrix(quaternion Q){
 }
 
 //matrix-vector multiplication
-
-std::array<double, 3> rot_matrix::matrix_vector(std::array<double, 3> a){
+std::array<double, 3> rot_matrix::matrix_vector(std::array<double, 3> a)
+{
 
   std::array<double, 3> result;
 

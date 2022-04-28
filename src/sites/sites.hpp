@@ -5,48 +5,46 @@
 #include <array>
 #include <memory>
 
-class site{
 
+//virtual base class
+class site
+{
 protected:
-
   //global position
   std::array<double, 3> X;
-
   //local position (X - X(CoM))
   std::array<double, 3> X_l;
-
   //velocity
   std::array<double, 3> V;
-
   //forces
   std::array<double, 3> F;
-
   //mass
   double m;
-
   //name
   std::string symbol;
 
-  //private methods to be accessed by constructor or member methods
-
-
 public:
-
+  //constructor
   site();
-
   //constructor initialise m
   site(double m): m(m) {}
 
+  //default setters
+  void set_global_coordinates(std::array<double, 3> X);
+  void set_local_coordinates(std::array<double, 3> X_l);
+  void set_velocity(std::array<double, 3> V);
+  void set_force(std::array<double, 3> F);
+  void set_mass(double m);
   void set_symbol(std::string symbol);
 
-  void set_local_coordinates(std::array<double, 3> X_l);
-  void set_global_coordinates(std::array<double, 3> X);
-
-  std::string get_symbol();
-  std::array<double, 3> get_local_coordinates();
-  std::array<double, 3> get_global_coordinates();
+  //default getters
+  const std::array<double, 3>& get_global_coordinates();
+  const std::array<double, 3>& get_local_coordinates();
+  const std::array<double, 3>& get_velocity();
+  const std::array<double, 3>& get_force();
   double get_mass();
-  std::array<double, 3> get_forces();
+  const std::string& get_symbol();
+
 
   void add_forces(std::array<double, 3> F);
   void reset_forces();
@@ -55,42 +53,57 @@ public:
 
 };
 
-class atom: public site{
+/*
 
-};
+Derived classes
 
-class charge: public site{
+*/
 
+
+class charge: public site
+{
+private:
   //charge
-  double q;
+  double q = 0;
 
 public:
-
+  //default constructor
   charge();
-
+  //initialiser list constructor
   charge(double q, double m): site(m), q(q) {}
 
+  //default setters
+  void set_charge(double q);
+
+  //default getters
   double get_charge();
 
   void set_parameters(double q, double m);
-
   void calculate_forces(std::shared_ptr<site> site){}
 
   //void calculate_forces(charge *charge);
-
 };
 
-class lj_site: public site{
-
+class lj_site: public site
+{
+private:
   //parameters
   double sigma;
   double epsilon;
 
 public:
-
+  //default constructor
   lj_site();
-
+  //initialise constructor
   lj_site(double sigma, double epsilon, double m): site(m), sigma(sigma), epsilon(epsilon) {}
+
+  //setter functions
+  void set_sigma(double sigma);
+  void set_epsilon(double epsilon);
+
+  //getter functions
+  double get_sigma();
+  double get_epsilon();
 
   void set_parameters(double sigma, double epsilon, double m);
   void set_forces(){}

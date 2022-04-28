@@ -11,8 +11,8 @@
 
 std::string white_spaces(int spaces);
 std::string to_string(double angstroms);
-void molecule_pdb(rigid_molecule *molecule, int &site_counter, std::string path);
-void box_pdb(Box *box, std::string path);
+void molecule_pdb(const std::shared_ptr<rigid_molecule>& molecule, int &site_counter, std::string path);
+void box_pdb(Box& box, std::string path);
 
 void terminate_pbd(std::string path);
 

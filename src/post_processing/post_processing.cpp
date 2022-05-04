@@ -1,5 +1,6 @@
 #include "post_processing.hpp"
 #include <iomanip>
+#include <memory>
 
 std::string to_string(double angstroms){
 
@@ -23,7 +24,7 @@ std::string white_spaces(int spaces){
 
 }
 
-void molecule_pdb(rigid_molecule *molecule, int &site_counter, std::string path){
+void molecule_pdb(const std::shared_ptr<rigid_molecule>& molecule, int &site_counter, std::string path){
 
   std::ofstream file;
   file.open(path, std::fstream::app);
@@ -32,10 +33,10 @@ void molecule_pdb(rigid_molecule *molecule, int &site_counter, std::string path)
   file << std::setprecision(3);
 
   //number of interaction sites of molecule
-  int site_no = molecule->return_sites_list().size();
+  int site_no = molecule->get_sites().size();
 
   //molecule sites pointer, to current site
-  site *site;
+  std::shared_ptr<site> site;
 
   //lenght of field parameters
   int no_len;
@@ -71,7 +72,7 @@ void molecule_pdb(rigid_molecule *molecule, int &site_counter, std::string path)
     file << "S" + std::to_string(site_counter);
 
     //get site from site list
-    site = (molecule->return_sites_list())[j];
+    site = (molecule->get_sites())[j];
 
     //get global coordinates from site
     coordinates = molecule->return_coordinates_site(j);
@@ -120,10 +121,10 @@ void terminate_pbd(std::string path){
 }
 
 
-void box_pdb(Box *box, std::string path){
+void box_pdb(Box& box, std::string path){
 
     //get vector of pointers to molecules, and amount of molecules in vector
-    std::vector<rigid_molecule*> molecules = box->get_molecules();
+    auto molecules = box.get_molecules();
     int molecule_no = molecules.size();
 
     //define site counter

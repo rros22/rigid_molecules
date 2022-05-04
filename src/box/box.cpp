@@ -1,5 +1,4 @@
 #include "box.hpp"
-
 #include <cmath>
 
 /*
@@ -8,25 +7,24 @@ Box
 
 */
 
-void Box::set_dimensions(double x, double y, double z){
-
+void Box::set_dimensions(double x, double y, double z)
+{
   this->X = {x, y, z};
 }
 
-Box::Box(double x, double y, double z, int molecule_no){
-
+Box::Box(double x, double y, double z, int molecule_no)
+{
   //set box dimensions
   set_dimensions(x, y, z);
-
   //add molecules to vector
-  for (int i = 0; i < molecule_no/2; i++){
-
-    molecules.push_back(new H2O());
+  for (int i = 0; i < molecule_no/2; i++)
+  {
+    molecules.push_back(std::make_shared<H2O> ());
   }
 
   for (int i = molecule_no/2; i < molecule_no; i++){
 
-    molecules.push_back(new N2());
+    molecules.push_back(std::make_shared<N2> ());
   }
 
   //initialise molecule positions randomly
@@ -68,17 +66,17 @@ Box::Box(double x, double y, double z, int molecule_no){
 
 }
 
-Box::~Box(){
-
-  //free memory from all elements of vector
-  for (auto p : molecules){
-
-    delete p;
-  }
-
+const std::array<double, 3>& Box::get_dimensions()
+{
+  return X;
 }
 
-std::vector<rigid_molecule*> Box::get_molecules(){
-
+std::vector<std::shared_ptr<rigid_molecule>>& Box::get_molecules()
+{
   return molecules;
+}
+
+std::shared_ptr<rigid_molecule> Box::get_molecule(int i)
+{
+  return molecules[i];
 }

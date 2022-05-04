@@ -1,61 +1,83 @@
 #include "sites.hpp"
-
+#include <cmath>
 /*
 
 Site
 
 */
 
+
+//default setters
+void site::set_global_coordinates(std::array<double, 3> X)
+{
+    this->X = X;
+}
+
+void site::set_local_coordinates(std::array<double, 3> X_l)
+{
+  this->X_l = X_l;
+}
+
+void site::set_velocity(std::array<double, 3> V)
+{
+  this->V = V;
+}
+
+void site::set_force(std::array<double, 3> F)
+{
+  this->F = F;
+}
+
+void site::set_mass(double m)
+{
+  this->m = m;
+}
+
 void site::set_symbol(std::string symbol){
 
   this->symbol = symbol;
 }
 
-void site::set_local_coordinates(std::array<double, 3> X_l){
-
-  this->X_l = X_l;
-}
-
-void site::set_global_coordinates(std::array<double, 3> X){
-
-  this->X = X;
-}
-
-std::string site::get_symbol(){
-
+//default getters
+const std::string& site::get_symbol()
+{
   return symbol;
 }
 
-std::array<double, 3> site::get_local_coordinates(){
-
-  return this->X_l;
-}
-
-std::array<double, 3> site::get_global_coordinates(){
-
+const std::array<double, 3>& site::get_global_coordinates()
+{
   return this->X;
 }
 
-double site::get_mass(){
+const std::array<double, 3>& site::get_local_coordinates()
+{
+  return this->X_l;
+}
 
+const std::array<double, 3>& site::get_velocity()
+{
+  return this->V;
+}
+
+const std::array<double, 3>& site::get_force()
+{
+  return this->F;
+}
+
+double site::get_mass()
+{
   return this->m;
 }
 
-std::array<double, 3> site::get_forces(){
-
-  return F;
-}
-
-void site::add_forces(std::array<double, 3> F){
-
+void site::add_forces(std::array<double, 3> F)
+{
   this->F[0] += F[0];
   this->F[1] += F[1];
   this->F[2] += F[2];
-
 }
 
-void site::reset_forces(){
-
+void site::reset_forces()
+{
   F[0] = 0;
   F[1] = 0;
   F[2] = 0;
@@ -66,17 +88,25 @@ void site::reset_forces(){
 Charge site
 
 */
-double charge::get_charge(){
 
+//default setters
+void charge::set_charge(double q)
+{
+  this->q = q;
+}
+
+//default setters
+double charge::get_charge()
+{
   return q;
 }
 
-void charge::set_parameters(double q, double m){
-
+void charge::set_parameters(double q, double m)
+{
   this->q = q;
   this->m = m;
 }
-
+/*
 void charge::calculate_forces(charge *charge){
 
   //define dielectric constant
@@ -108,6 +138,7 @@ void charge::calculate_forces(charge *charge){
   charge->add_forces(F_2);
 
 }
+*/
 
 /*
 
@@ -115,13 +146,35 @@ Lennard jones site
 
 */
 
-void lj_site::set_parameters(double sigma, double epsilon, double m){
+//setter functions
+void lj_site::set_sigma(double sigma)
+{
+  this->sigma = sigma;
+}
 
+void lj_site::set_epsilon(double epsilon)
+{
+  this->epsilon = epsilon;
+}
+
+//getter functions
+double lj_site::get_sigma()
+{
+  return sigma;
+}
+
+double lj_site::get_epsilon()
+{
+  return epsilon;
+}
+
+void lj_site::set_parameters(double sigma, double epsilon, double m)
+{
   this->sigma = sigma;
   this->epsilon = epsilon;
   this->m = m;
 }
-
+/*
 void lj_site::calculate_forces(lj_site *lj_site){
 
   //define lennard jones parameters
@@ -149,3 +202,4 @@ void lj_site::calculate_forces(lj_site *lj_site){
   this->add_forces(F_1);
   lj_site->add_forces(F_2);
 }
+*/

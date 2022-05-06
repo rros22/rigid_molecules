@@ -13,7 +13,7 @@
 
 class rigid_molecule
 {
-protected:
+private:
   //global coordinates of the center of mass
   std::array<double, 3> CoM;
   //body frame orientation wrt global frame
@@ -26,28 +26,18 @@ protected:
   std::array<double, 3> F;
   //torque, about principal axes i.e. local coordinates
   std::array<double, 3> T;
-  //list of interaction sites
-  std::vector<std::shared_ptr<site>> sites;
   //name
   std::string symbol;
 
-  //set molecule mass and intertia (cannot vary)
-  void set_mass();
-  void set_mom_inertia(std::array<double, 3> I);
-
-  //private methods to be accessed by constructor or member methods
-  void set_symbol(std::string symbol);
-
-
 public:
-
-  virtual ~rigid_molecule(){}
-
   //setter functions
+  void set_mass(double m);
+  void set_mom_inertia(std::array<double, 3> I);
   void set_position(std::array<double, 3> &CoM);
   void set_orientation(quaternion &Q);
-  void set_CoM_force();
+  void set_CoM_force(std::array<double, 3> F);
   void set_torque();
+  void set_symbol(std::string symbol);
 
   //getter functions
   const std::array<double, 3>& get_position();
@@ -56,26 +46,23 @@ public:
   const std::array<double, 3>& get_mom_inertia();
   const std::array<double, 3>& get_CoM_force();
   const std::array<double, 3>& get_torque();
-  const std::vector<std::shared_ptr<site>>& get_sites();
   const std::string& get_symbol();
 
   void reset_CoM_force();
 
-
-  void set_global_coordinates();
-  std::array<double, 3> return_coordinates_site(int i);
-
-
-  //methods to be implemented by derived classes
-  virtual void set_forces(std::shared_ptr<rigid_molecule>) = 0;
-
 };
 
-class H2O: public rigid_molecule{
-
-  //interaction sites allocated by constructor on sites vector (atoms and dummy charges)
+class H2O
+{
+private:
+  lj_site O1;
+  charge H1;
+  charge H2;
+  charge q;
 
 public:
+  //common to any molecule
+  rigid_molecule kernel;
 
   H2O();
 
@@ -83,26 +70,12 @@ public:
 
   H2O(std::array<double, 3> CoM, quaternion Q);
 
+  //site coordinates
+  void set_global_coordinates();
   //forces
   void set_forces(std::shared_ptr<rigid_molecule>){};
 
 };
 
-class N2: public rigid_molecule{
-
-
-
-public:
-
-  N2();
-
-  ~N2() {};
-
-  N2(std::array<double, 3> CoM, quaternion Q);
-
-  //forces
-  void set_forces(std::shared_ptr<rigid_molecule>){}
-
-};
 
 #endif

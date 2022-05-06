@@ -89,6 +89,12 @@ Charge site
 
 */
 
+//construction
+charge::charge(double q, double m)
+{
+  set_parameters(q, m);
+}
+
 //default setters
 void charge::set_charge(double q)
 {
@@ -104,7 +110,7 @@ double charge::get_charge()
 void charge::set_parameters(double q, double m)
 {
   this->q = q;
-  this->m = m;
+  kernel.set_mass(m);
 }
 /*
 void charge::calculate_forces(charge *charge){
@@ -146,6 +152,11 @@ Lennard jones site
 
 */
 
+lj_site::lj_site(double sigma, double epsilon, double m)
+{
+  set_parameters(sigma, epsilon, m);
+}
+
 //setter functions
 void lj_site::set_sigma(double sigma)
 {
@@ -172,7 +183,7 @@ void lj_site::set_parameters(double sigma, double epsilon, double m)
 {
   this->sigma = sigma;
   this->epsilon = epsilon;
-  this->m = m;
+  kernel.set_mass(m);
 }
 /*
 void lj_site::calculate_forces(lj_site *lj_site){

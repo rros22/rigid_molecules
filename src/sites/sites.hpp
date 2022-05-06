@@ -6,7 +6,7 @@
 #include <memory>
 
 
-//virtual base class
+//kernel to any site class
 class site
 {
 protected:
@@ -49,8 +49,6 @@ public:
   void add_forces(std::array<double, 3> F);
   void reset_forces();
 
-  virtual void calculate_forces(std::shared_ptr<site> site) = 0;
-
 };
 
 /*
@@ -60,17 +58,19 @@ Derived classes
 */
 
 
-class charge: public site
+class charge
 {
 private:
   //charge
   double q = 0;
 
 public:
+  //contains a site
+  site kernel;
   //default constructor
   charge();
   //initialiser list constructor
-  charge(double q, double m): site(m), q(q) {}
+  charge(double q, double m);
 
   //default setters
   void set_charge(double q);
@@ -84,7 +84,7 @@ public:
   //void calculate_forces(charge *charge);
 };
 
-class lj_site: public site
+class lj_site
 {
 private:
   //parameters
@@ -92,10 +92,13 @@ private:
   double epsilon;
 
 public:
+  //constains a site
+  site kernel;
   //default constructor
   lj_site();
+  
   //initialise constructor
-  lj_site(double sigma, double epsilon, double m): site(m), sigma(sigma), epsilon(epsilon) {}
+  lj_site(double sigma, double epsilon, double m);
 
   //setter functions
   void set_sigma(double sigma);

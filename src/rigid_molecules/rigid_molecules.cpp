@@ -8,6 +8,7 @@
 Rigid molecule
 
 */
+
 //setter functions
 void rigid_molecule::set_position(std::array<double, 3> &CoM)
 {
@@ -19,15 +20,10 @@ void rigid_molecule::set_orientation(quaternion &Q)
   this->Q = Q;
 }
 
-void rigid_molecule::set_mass()
+void rigid_molecule::set_mass(double m)
 {
   //reset mass
-  this->m = 0;
-  //loop through site list
-  for (int i = 0; i < sites.size(); i++){
-
-    this->m += sites[i]->get_mass();
-  }
+  this->m = m;
 }
 
 void rigid_molecule::set_mom_inertia(std::array<double, 3> I)
@@ -40,92 +36,27 @@ void rigid_molecule::set_symbol(std::string symbol)
   this->symbol = symbol;
 }
 
-double rigid_molecule::get_mass(){
-
+//getter functions
+double rigid_molecule::get_mass()
+{
   return this->m;
 }
 
-const std::vector<std::shared_ptr<site>>& rigid_molecule::get_sites(){
-
-  return sites;
-}
-
-const std::string& rigid_molecule::get_symbol(){
-
+const std::string& rigid_molecule::get_symbol()
+{
   return symbol;
 }
 
-void rigid_molecule::set_global_coordinates(){
 
-  //rotate local coordinates to molecule orientation
-  rot_matrix rotation(this->Q);
-
-  //store global coordinates, and intermediate states of calculation
-  std::array<double, 3> global;
-
-  //loop through all sites in molecules
-  for (int i = 0; i < sites.size(); i++){
-
-    //tranform local coordinates according to molecule orientation
-    global = rotation * (sites[i]->get_local_coordinates());
-
-    //offset by center of mass position
-    for (int j = 0; j < 3; j++){
-
-      global[j] += CoM[j];
-    }
-
-    //set global coordinate of site
-    sites[i]->set_global_coordinates(global);
-
-  }
+void rigid_molecule::set_CoM_force(std::array<double, 3> F)
+{
+    this->F[0] += F[0];
+    this->F[1] += F[1];
+    this->F[2] += F[2];
 }
 
-
-std::array<double, 3> rigid_molecule::return_coordinates_site(int i){
-
-  if (i >= 0 && i < sites.size()){
-
-    return sites[i]->get_global_coordinates();
-
-  }
-
-  else{
-
-    std::cout << "Index i is out of bounds: cannot return site." << std::endl;
-
-    return {0, 0, 0};
-  }
-
-}
-
-
-
-void rigid_molecule::set_CoM_force(){
-
-  //reset previous CoM force
-  reset_CoM_force();
-
-  //temp array to store contributions of sites
-  std::array<double, 3> forces;
-
-  //add contributions from every site
-  for (int i = 0; i < sites.size(); i++){
-
-    //obtain forces from each site
-    forces = sites[i]->get_force();
-
-    //add (Fx, Fy, Fz) contributions from every site (vector addition)
-    F[0] += forces[0];
-    F[1] += forces[1];
-    F[2] += forces[2];
-
-  }
-
-}
-
-void rigid_molecule::reset_CoM_force(){
-
+void rigid_molecule::reset_CoM_force()
+{
   F[0] = 0;
   F[1] = 0;
   F[2] = 0;
@@ -140,52 +71,99 @@ H2O
 H2O::H2O(){
 
   //set molecule symbol
-  set_symbol("H2O");
-
-  //define interaction sites
-  sites.push_back(std::make_shared<lj_site> (3.15365, 78*k_b, 15.999));
-  sites.push_back(std::make_shared<charge> (0.52, 1.00784));
-  sites.push_back(std::make_shared<charge> (0.52, 1.00784));
-  sites.push_back(std::make_shared<charge> (-1.04, 0));
+  kernel.set_symbol("H2O");
 
   //set site names
-  sites[0]->set_symbol("O");
-  sites[1]->set_symbol("H");
-  sites[2]->set_symbol("H");
-  sites[3]->set_symbol("X");
+  O1.kernel.set_symbol("O");
+  H1.kernel.set_symbol("H");
+  H2.kernel.set_symbol("H");
+  q.kernel.set_symbol("X");
 
   //set interaction site parameters
-  //sites[0]->set_parameters(3.15365, 78*k_b, 15.999);
-  //sites[1]->set_parameters(0.52, 1.00784);
-  //sites[2]->set_parameters(0.52, 1.00784);
+  O1.set_parameters(3.15365, 78*k_b, 15.999);
+  H1.set_parameters(0.52, 1.00784);
+  H2.set_parameters(0.52, 1.00784);
 
-  //sites[3]->set_parameters(-1.04, 0);
+  q.set_parameters(-1.04, 0);
 
   //set site coordinates
-  sites[0]->set_local_coordinates({0, -0.065555, 0});
-  sites[1]->set_local_coordinates({-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
-  sites[2]->set_local_coordinates({0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
-  sites[3]->set_local_coordinates({0, 0.15 - 0.065555, 0});
+  O1.kernel.set_local_coordinates({0, -0.065555, 0});
+  H1.kernel.set_local_coordinates({-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
+  H2.kernel.set_local_coordinates({0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0});
+  q.kernel.set_local_coordinates({0, 0.15 - 0.065555, 0});
 
   //define molecular mass
-  set_mass();
+  kernel.set_mass(O1.kernel.get_mass() + H1.kernel.get_mass() + H2.kernel.get_mass());
 
   //define molecular moments of inertia
-  I[0] = 0.614812;
-  I[1] = 1.154932;
-  I[2] = 1.78001;
+  std::array<double, 3> I = {0.614812, 1.154932, 1.78001};
 
-
+  kernel.set_mom_inertia(I);
 
 }
 
 H2O::H2O(std::array<double, 3> CoM, quaternion Q): H2O(){
 
-    set_position(CoM);
-    set_orientation(Q);
+    kernel.set_position(CoM);
+    kernel.set_orientation(Q);
 
-    set_global_coordinates();
 }
+
+void H2O::set_global_coordinates(){
+
+  //rotate local coordinates to molecule orientation
+  rot_matrix rotation(kernel.get_orientation());
+
+  //store global coordinates, and intermediate states of calculation
+  std::array<double, 3> global;
+  std::array<double, 3> CoM;
+
+  //O1
+  global = rotation * O1.kernel.get_local_coordinates();
+  CoM = kernel.get_position();
+
+  for (int j = 0; j < 3; j++)
+  {
+    global[j] += CoM[j];
+  }
+
+  O1.kernel.set_global_coordinates(global);
+
+  //H1
+  global = rotation * H1.kernel.get_local_coordinates();
+  CoM = kernel.get_position();
+
+  for (int j = 0; j < 3; j++)
+  {
+    global[j] += CoM[j];
+  }
+
+  H1.kernel.set_global_coordinates(global);
+
+  //H2
+  global = rotation * H2.kernel.get_local_coordinates();
+  CoM = kernel.get_position();
+
+  for (int j = 0; j < 3; j++)
+  {
+    global[j] +=CoM[j];
+  }
+
+  H2.kernel.set_global_coordinates(global);
+
+  //q
+  global = rotation * q.kernel.get_local_coordinates();
+  CoM = kernel.get_position();
+
+  for (int j = 0; j < 3; j++)
+  {
+    global[j] += CoM[j];
+  }
+
+  q.kernel.set_global_coordinates(global);
+
+}
+
 /*
 void H2O::set_forces(rigid_molecule *molecule){
 
@@ -239,50 +217,3 @@ void H2O::set_forces(rigid_molecule *molecule){
 
 }
 */
-
-/*
-
-N2
-
-*/
-
-N2::N2(){
-
-  //set molecule symbol
-  set_symbol("N2");
-
-  //define interaction site pointer array
-  sites.push_back(std::make_shared<lj_site> (3.17, 78*k_b, 14.0067));
-  sites.push_back(std::make_shared<lj_site> (3.17, 78*k_b, 14.0067));
-
-  //for debugging purposes
-  sites.push_back(std::make_shared<charge> (0, 0));
-
-  //set site names
-  sites[0]->set_symbol("N");
-  sites[1]->set_symbol("N");
-
-  //set interaction site parameters
-  //sites[0]->set_parameters(3.17, 78*k_b, 14.0067);
-  //sites[1]->set_parameters(3.17, 78*k_b, 14.0067);
-
-  //set site coordinates
-  sites[0]->set_local_coordinates({0, -0.545, 0});
-  sites[1]->set_local_coordinates({0, 0.545, 0});
-
-  //define molecular mass
-  set_mass();
-
-  //define molecular moments of inertia
-  I[0] = 8.32068;
-  I[1] = 0;
-  I[2] = 8.32068;
-}
-
-N2::N2(std::array<double, 3> CoM, quaternion Q): N2(){
-
-    set_position(CoM);
-    set_orientation(Q);
-
-    set_global_coordinates();
-}

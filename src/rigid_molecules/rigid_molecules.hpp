@@ -8,11 +8,7 @@
 #include "../sites/sites.hpp"
 #include "../quaternions/quaternions.hpp"
 
-//abstract base class
+//
 
-class rigid_molecule
-{
-  
-};
 
 #endif

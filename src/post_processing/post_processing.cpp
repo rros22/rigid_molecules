@@ -24,6 +24,8 @@ std::string white_spaces(int spaces){
 
 }
 
+/*
+
 void molecule_pdb(const std::shared_ptr<rigid_molecule>& molecule, int &site_counter, std::string path){
 
   std::ofstream file;
@@ -144,3 +146,5 @@ void box_pdb(Box& box, std::string path){
     //close file
     //file.close();
 }
+
+*/

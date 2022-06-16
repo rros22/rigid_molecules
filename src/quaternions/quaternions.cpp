@@ -36,16 +36,6 @@ double quaternion::get_angle()
   return 2*acos(this->q0);
 }
 
-const std::array<double, 3>& quaternion::get_axis()
-{
-  return this->q;
-}
-
-std::array<double, 4> quaternion::get_parameters()
-{
-  return {q0, q[0], q[1], q[2]};
-}
-
 double quaternion::get_norm()
 {
   return sqrt(pow(q0, 2) + pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
@@ -61,10 +51,10 @@ double quaternion::get_norm()
 
 void rot_matrix::set_elements(quaternion Q){
 
-  double q0 = Q.get_parameters()[0];
-  double q1 = Q.get_parameters()[1];
-  double q2 = Q.get_parameters()[2];
-  double q3 = Q.get_parameters()[3];
+  double q0 = Q.q0;
+  double q1 = Q.q[0];
+  double q2 = Q.q[1];
+  double q3 = Q.q[2];
 
   //set elements
   elements[0] = pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2);

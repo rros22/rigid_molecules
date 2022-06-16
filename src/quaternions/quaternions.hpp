@@ -3,36 +3,31 @@
 
 #include <array>
 
-class quaternion
+struct quaternion
 {
-private:
-  //scalar part
-  double q0;
-  //vector part
-  std::array<double, 3> q;
-  //constructor called functions
+  double q0;   //scalar part
+  double q[3]; //vector part
+
+  //member functions
+  quaternion(){};
+  quaternion(double theta, std::array<double, 3> &q);
+
   void set_angle(double theta);
   void set_axis(std::array<double, 3> &q, double theta);
   std::array<double, 3> normalise(std::array<double, 3> &q);
-
-public:
   //setter functions
   void set_quaternion(double theta, std::array<double, 3> &q);
   //getter functions
   double get_angle();
-  const std::array<double, 3>& get_axis();
-  std::array<double, 4> get_parameters();
   double get_norm();
 
 };
 
-class rot_matrix
+struct rot_matrix
 {
-private:
-  //store matrix elements
-  std::array<double, 9> elements;
 
-public:
+  double elements[9];
+
   //create matrix with quaternion defined components
   rot_matrix(quaternion Q);
   //set matrix elements with quaternion

@@ -41,49 +41,25 @@ double quaternion::get_norm()
   return sqrt(pow(q0, 2) + pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
 }
 
-
-
-/*
-
-  Rotation matrix class
-
-*/
-
-void rot_matrix::set_elements(quaternion Q){
-
-  double q0 = Q.q0;
-  double q1 = Q.q[0];
-  double q2 = Q.q[1];
-  double q3 = Q.q[2];
-
-  //set elements
-  elements[0] = pow(q0, 2) + pow(q1, 2) - pow(q2, 2) - pow(q3, 2);
-  elements[1] = 2*(q1*q2 - q0*q3);
-  elements[2] = 2*(q1*q3 + q0*q2);
-  elements[3] = 2*(q1*q2 + q0*q3);
-  elements[4] = pow(q0, 2) - pow(q1, 2) + pow(q2, 2) - pow(q3, 2);
-  elements[5] = 2*(q2*q3 - q0*q1);
-  elements[6] = 2*(q1*q3 - q0*q2);
-  elements[7] = 2*(q2*q3 + q0*q1);
-  elements[8] = pow(q0, 2) - pow(q1, 2) - pow(q2, 2) + pow(q3, 2);
-
-}
-
-rot_matrix::rot_matrix(quaternion Q){
-
-  set_elements(Q);
-}
-
-//matrix-vector multiplication
-std::array<double, 3> rot_matrix::matrix_vector(std::array<double, 3> a)
+void quaternion::rotate_vector(double* input, double* output)
 {
+    //compiler will inline
+    double rotation_matrix[9];
+    //set matrix elements
+    rotation_matrix[0] = pow(q0, 2) + pow(q[0], 2) - pow(q[1], 2) - pow(q[2], 2);
+    rotation_matrix[1] = 2*(q[0]*q[1] - q0*q[2]);
+    rotation_matrix[2] = 2*(q[0]*q[2] + q0*q[1]);
+    rotation_matrix[3] = 2*(q[0]*q[1] + q0*q[2]);
+    rotation_matrix[4] = pow(q0, 2) - pow(q[0], 2) + pow(q[1], 2) - pow(q[2], 2);
+    rotation_matrix[5] = 2*(q[1]*q[2] - q0*q[0]);
+    rotation_matrix[6] = 2*(q[0]*q[2] - q0*q[1]);
+    rotation_matrix[7] = 2*(q[1]*q[2] + q0*q[0]);
+    rotation_matrix[8] = pow(q0, 2) - pow(q[0], 2) - pow(q[1], 2) + pow(q[2], 2);
+    //compute rotated vector
+    for (int i = 0; i < 3; i++)
+    {
+      output[i] = rotation_matrix[3*i]*input[0] + rotation_matrix[1 + 3*i]*input[1] +
+                  rotation_matrix[2 + 3*i]*input[2];
+    }
 
-  std::array<double, 3> result;
-
-  for (int i = 0; i < 3; i++){
-
-    result[i] = elements[3*i]*a[0] + elements[1 + 3*i]*a[1] + elements[2 + 3*i]*a[2];
-  }
-
-  return result;
 }

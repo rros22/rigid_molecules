@@ -20,32 +20,11 @@ struct quaternion
   //getter functions
   double get_angle();
   double get_norm();
+  //calculate orientation. Compact the matrix struct definition
+  void rotate_vector(double* input, double* output);
 
 };
 
-struct rot_matrix
-{
 
-  double elements[9];
-
-  //create matrix with quaternion defined components
-  rot_matrix(quaternion Q);
-  //set matrix elements with quaternion
-  void set_elements(quaternion Q);
-  //return array o input rotated coordinates
-  std::array<double, 3> matrix_vector(std::array<double, 3> a);
-  //overload operaator '*' to do the same as the above
-  std::array<double, 3> operator * (const std::array<double, 3>& coordinate)
-  {
-    std::array<double, 3> result;
-
-    for (int i = 0; i < 3; i++){
-
-      result[i] = elements[3*i]*coordinate[0] + elements[1 + 3*i]*coordinate[1] + elements[2 + 3*i]*coordinate[2];
-    }
-
-    return result;
-  }
-};
 
 #endif

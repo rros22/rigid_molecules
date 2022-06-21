@@ -7,10 +7,8 @@
 #include "../post_processing/post_processing.hpp"
 #include "../quaternions/quaternions.hpp"
 
-int main(){
 
-
-
+int main()
 
   return 0;
 }

@@ -21,12 +21,29 @@ struct site_positions
   double z;
 };
 
+struct water_site_positions
+{
+  site_positions O;
+  site_positions H1;
+  site_positions H2;
+  site_positions q1;
+};
+
 //site forces
 struct site_forces
 {
   double fx;
   double fy;
   double fz;
+};
+
+
+struct water_site_forces
+{
+  site_forces O;
+  site_forces H1;
+  site_forces H2;
+  site_forces q1;
 };
 
 //linear dynamics components
@@ -67,8 +84,8 @@ struct h2o_buffer
   unsigned n;   //number of water molecules
   void* buffer = NULL; // memory for the water molecules
 
-  site_positions* site_pos; //array of site positions both charges and lj
-  site_forces* site_fr;     //array of z site forces
+  water_site_positions* water_site_pos; //array of site positions both charges and lj (in struct)
+  water_site_forces* water_site_fr;     //array of site forces (in struct)
   lin_dyn_x* x_lin_dyn;     //array of x linear dynamics components
   lin_dyn_y* y_lin_dyn;     //array of y linear dynamics components
   lin_dyn_z* z_lin_dyn;     //array of z linear dynamics components

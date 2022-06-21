@@ -1,7 +1,7 @@
 #include "update_algorithm.hpp"
 #include <cmath>
 
-void coulombic_force(site_positions* site_a, site_positions* site_b, double q_a, double q_b, site_forces* forces)
+void coulombic_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double q_a, double q_b)
 {
   //force constant
   double k_e = 8.988E9;
@@ -15,16 +15,12 @@ void coulombic_force(site_positions* site_a, site_positions* site_b, double q_a,
   double z_b = site_b->z;
 
   //forces
-  double f_x = - k_e*q_a*q_b*(x_b - x_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 3/2);
-  double f_y = - k_e*q_a*q_b*(y_b - y_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 3/2);
-  double f_z = - k_e*q_a*q_b*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 3/2);
+  forces->fx = -k_e*q_a*q_b*(x_b - x_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 3/2);
+  forces->fy = -k_e*q_a*q_b*(y_b - y_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 3/2);
+  forces->fz = -k_e*q_a*q_b*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 3/2);
 
-  forces->fx = f_x;
-  forces->fy = f_y;
-  forces->fz = f_z;
 }
-
-void lj_force(site_positions* site_a, site_positions* site_b, double sigma, double epsilon, site_forces* forces)
+void lj_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double sigma, double epsilon)
 {
   //local variables for simplification, compiler will inline
   double x_a = site_a->x;
@@ -36,11 +32,98 @@ void lj_force(site_positions* site_a, site_positions* site_b, double sigma, doub
   double z_b = site_b->z;
 
   //forces
-  double f_x = - 4*epsilon*((12*pow(sigma, 12)*(x_b - x_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 7)) - (6*pow(sigma, 6)*(x_b - x_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 4)));
-  double f_y = - 4*epsilon*((12*pow(sigma, 12)*(y_b - y_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 7)) - (6*pow(sigma, 6)*(y_b - y_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 4)));
-  double f_z = - 4*epsilon*((12*pow(sigma, 12)*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 7)) - (6*pow(sigma, 6)*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 4)));
+  forces->fx = -4*epsilon*((12*pow(sigma, 12)*(x_b - x_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 7)) - (6*pow(sigma, 6)*(x_b - x_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 4)));
+  forces->fy = -4*epsilon*((12*pow(sigma, 12)*(y_b - y_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 7)) - (6*pow(sigma, 6)*(y_b - y_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 4)));
+  forces->fz = -4*epsilon*((12*pow(sigma, 12)*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 7)) - (6*pow(sigma, 6)*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 4)));
+}
 
-  forces->fx = f_x;
-  forces->fy = f_y;
-  forces->fz = f_z;
+void add_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forces)
+{
+  site_a->fx += forces->fx;
+  site_a->fy += forces->fy;
+  site_a->fz += forces->fz;
+
+  site_b->fx -= forces->fx;
+  site_b->fy -= forces->fy;
+  site_b->fz -= forces->fz;
+
+}
+
+void set_forces_water(h2o_buffer* water_molecules)
+{
+  //physics constants
+  double sigma = 1;
+  double epsilon = 1;
+  double kb = 1;
+
+  double q_H = 1;
+  double q_q = 1;
+  //inlined by compiler
+  unsigned molecule_no = water_molecules->n;
+  water_site_positions* water_site_pos = water_molecules->water_site_pos;
+  water_site_forces* water_site_fr = water_molecules->water_site_fr;
+  //struct to store temp forces results
+  site_forces forces;
+  //call site forces functions
+  for (int i = 0; i < molecule_no; i++)
+  {
+    for (int j = i + 1; j < molecule_no; j++)
+    {
+      // O - O interaction
+      lj_force(&water_site_pos[i].O, &water_site_pos[j].O, &forces, sigma, epsilon);
+      add_force_sites(&water_site_fr[i].O, &water_site_fr[j].O, &forces);
+
+      // H1 - H1 interaction
+      coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H1, &forces, q_H, q_H);
+      add_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H1, &forces);
+      // H1 - H2 interaction
+      coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H2, &forces, q_H, q_H);
+      add_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
+      // H1 - q1 interaction
+      coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].q1, &forces, q_H, q_q);
+      add_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
+
+      // H2 - H1 interaction
+      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H1, &forces, q_H, q_H);
+      add_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H1, &forces);
+      // H2 - H2 interaction
+      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H2, &forces, q_H, q_H);
+      add_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
+      // H1 - q1 interaction
+      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].q1, &forces, q_H, q_q);
+      add_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
+
+      // q1 - H1 interaction
+      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H1, &forces, q_q, q_H);
+      add_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H1, &forces);
+      // q1 - H2 interaction
+      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H2, &forces, q_q, q_H);
+      add_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H2, &forces);
+      // q1 - q1 interaction
+      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].q1, &forces, q_q, q_q);
+      add_force_sites(&water_site_fr[i].q1, &water_site_fr[j].q1, &forces);
+
+    }
+  }
+}
+
+void set_CoM_force(h2o_buffer* water_molecules)
+{
+  unsigned molecule_no = water_molecules->n;
+  water_site_forces* water_site_fr = water_molecules->water_site_fr;
+  lin_dyn_x* x_lin_dyn = water_molecules->x_lin_dyn;
+  lin_dyn_y* y_lin_dyn = water_molecules->y_lin_dyn;
+  lin_dyn_z* z_lin_dyn = water_molecules->z_lin_dyn;
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    x_lin_dyn[i].com_Fx = water_site_fr[i].O.fx + water_site_fr[i].H1.fx +
+                       water_site_fr[i].H2.fx + water_site_fr[i].q1.fx;
+
+    y_lin_dyn[i].com_Fy = water_site_fr[i].O.fy + water_site_fr[i].H1.fy +
+                       water_site_fr[i].H2.fy + water_site_fr[i].q1.fy;
+
+    z_lin_dyn[i].com_Fz = water_site_fr[i].O.fz + water_site_fr[i].H1.fz +
+                       water_site_fr[i].H2.fz + water_site_fr[i].q1.fz;
+  }
 }

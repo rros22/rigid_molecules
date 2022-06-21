@@ -20,14 +20,14 @@ void h2o_buffer::allocate(unsigned n)
   else
   {
     //calculate memory required
-    size_t buffer_size = n*(4*sizeof(site_positions) + sizeof(site_forces) +
+    size_t buffer_size = n*(sizeof(water_site_positions) + sizeof(water_site_forces) +
                             3*sizeof(lin_dyn_x) + sizeof(quaternion));
     //allocate
     buffer = malloc(buffer_size);
     //initialise pointers to different segments of the buffer
-    site_pos = (site_positions *) buffer;
-    site_fr = (site_forces *)(site_pos + 4*n); //4 sites per molecule
-    x_lin_dyn = (lin_dyn_x *)(site_fr + n);
+    water_site_pos = (water_site_positions *) buffer;
+    water_site_fr = (water_site_forces *)(water_site_pos + n); //4 sites per molecule
+    x_lin_dyn = (lin_dyn_x *)(water_site_fr + n);
     y_lin_dyn = (lin_dyn_y *)(x_lin_dyn + n);
     z_lin_dyn = (lin_dyn_z *)(y_lin_dyn + n);
     orientations = (quaternion *)(z_lin_dyn + n);

@@ -127,3 +127,78 @@ void set_CoM_force(h2o_buffer* water_molecules)
                        water_site_fr[i].H2.fz + water_site_fr[i].q1.fz;
   }
 }
+
+void set_CoM_force_n(h2o_buffer* water_molecules)
+{
+  unsigned molecule_no = water_molecules->n;
+  water_site_forces* water_site_fr = water_molecules->water_site_fr;
+  lin_dyn_x* x_lin_dyn = water_molecules->x_lin_dyn;
+  lin_dyn_y* y_lin_dyn = water_molecules->y_lin_dyn;
+  lin_dyn_z* z_lin_dyn = water_molecules->z_lin_dyn;
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    x_lin_dyn[i].com_Fx_n = water_site_fr[i].O.fx + water_site_fr[i].H1.fx +
+                       water_site_fr[i].H2.fx + water_site_fr[i].q1.fx;
+
+    y_lin_dyn[i].com_Fy_n = water_site_fr[i].O.fy + water_site_fr[i].H1.fy +
+                       water_site_fr[i].H2.fy + water_site_fr[i].q1.fy;
+
+    z_lin_dyn[i].com_Fz_n = water_site_fr[i].O.fz + water_site_fr[i].H1.fz +
+                       water_site_fr[i].H2.fz + water_site_fr[i].q1.fz;
+  }
+}
+
+/*
+  Position integration
+*/
+
+void next_position(h2o_buffer* water_molecules, double dt)
+{
+  double m_water = 1;
+  unsigned molecule_no = water_molecules->n;
+  lin_dyn_x* x_lin_dyn = water_molecules->x_lin_dyn;
+  lin_dyn_y* y_lin_dyn = water_molecules->y_lin_dyn;
+  lin_dyn_z* z_lin_dyn = water_molecules->z_lin_dyn;
+
+  //loop through every dimension sequentially
+  for (int i = 0; i < molecule_no; i++)
+  {
+    x_lin_dyn[i].com_x = x_lin_dyn[i].com_x + dt*x_lin_dyn[i].com_u + pow(dt, 2)/2/m_water*x_lin_dyn[i].com_Fx;
+  }
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    y_lin_dyn[i].com_y = y_lin_dyn[i].com_y + dt*y_lin_dyn[i].com_v + pow(dt, 2)/2/m_water*y_lin_dyn[i].com_Fy;
+  }
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    z_lin_dyn[i].com_z = z_lin_dyn[i].com_z + dt*z_lin_dyn[i].com_w + pow(dt, 2)/2/m_water*z_lin_dyn[i].com_Fz;
+  }
+}
+
+void next_velocity(h2o_buffer* water_molecules, double dt)
+{
+  double m_water = 1;
+  unsigned molecule_no = water_molecules->n;
+  lin_dyn_x* x_lin_dyn = water_molecules->x_lin_dyn;
+  lin_dyn_y* y_lin_dyn = water_molecules->y_lin_dyn;
+  lin_dyn_z* z_lin_dyn = water_molecules->z_lin_dyn;
+
+  //loop through every dimension sequentially
+  for (int i = 0; i < molecule_no; i++)
+  {
+    x_lin_dyn[i].com_u = x_lin_dyn[i].com_u + dt/2/m_water*(x_lin_dyn[i].com_Fx + x_lin_dyn[i].com_Fx_n);
+  }
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    y_lin_dyn[i].com_v = y_lin_dyn[i].com_v + dt/2/m_water*(y_lin_dyn[i].com_Fy + y_lin_dyn[i].com_Fy_n);
+  }
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    z_lin_dyn[i].com_w = z_lin_dyn[i].com_w + dt/2/m_water*(z_lin_dyn[i].com_Fz + z_lin_dyn[i].com_Fz_n);
+  }
+}

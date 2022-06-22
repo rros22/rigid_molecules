@@ -1,7 +1,6 @@
 #ifndef UPDATE_ALGORITHM_HPP
 #define UPDATE_ALGORITHM_HPP
 
-#include <cstring>
 #include "../rigid_molecules/rigid_molecules.hpp"
 
 /*
@@ -25,5 +24,13 @@ void add_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forc
 void set_forces_water(h2o_buffer* water_molecules);
 //calculate CoM forces
 void set_CoM_force(h2o_buffer* water_molecules);
+void set_CoM_force_n(h2o_buffer* water_molecules);
+
+/*
+  Position integration
+*/
+
+void next_position(h2o_buffer* water_molecules, double dt);
+void next_velocity(h2o_buffer* water_molecules, double dt);
 
 #endif

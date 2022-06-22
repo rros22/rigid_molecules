@@ -60,7 +60,7 @@ struct lin_dyn_y
   double com_y;
   double com_v;
   double com_Fy;
-  double com_Fx_n;
+  double com_Fy_n;
 };
 
 struct lin_dyn_z
@@ -68,7 +68,7 @@ struct lin_dyn_z
   double com_z;
   double com_w;
   double com_Fz;
-  double com_Fx_n;
+  double com_Fz_n;
 };
 
 //memory buffers for each molecule type

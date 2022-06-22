@@ -41,7 +41,7 @@ double quaternion::get_norm()
   return sqrt(pow(q0, 2) + pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
 }
 
-void quaternion::rotate_vector(double* input, double* output)
+void quaternion::transform_vector(double* input, double* offset, double* output)
 {
     //compiler will inline
     double rotation_matrix[9];
@@ -60,6 +60,8 @@ void quaternion::rotate_vector(double* input, double* output)
     {
       output[i] = rotation_matrix[3*i]*input[0] + rotation_matrix[1 + 3*i]*input[1] +
                   rotation_matrix[2 + 3*i]*input[2];
+
+      output[i] += offset[i];  
     }
 
 }

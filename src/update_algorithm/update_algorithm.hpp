@@ -16,6 +16,16 @@
         4.c. Verlet integrate
 */
 
+/*
+  1. SIte position calculation
+*/
+
+void site_global_coordiantes(h2o_buffer* water_molecules);
+
+/*
+  1. SIte force calculation
+*/
+
 //site forces
 void coulombic_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double q_a, double q_b);
 void lj_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double sigma, double epsilon);
@@ -27,7 +37,7 @@ void set_CoM_force(h2o_buffer* water_molecules);
 void set_CoM_force_n(h2o_buffer* water_molecules);
 
 /*
-  Position integration
+  3. Position integration
 */
 
 void next_position(h2o_buffer* water_molecules, double dt);

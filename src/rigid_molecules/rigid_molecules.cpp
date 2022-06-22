@@ -1,4 +1,5 @@
 #include "rigid_molecules.hpp"
+#include "../quaternions/quaternions.hpp"
 #include <cmath>
 
 

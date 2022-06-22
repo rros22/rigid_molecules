@@ -10,8 +10,8 @@
 
 std::string white_spaces(int spaces);
 std::string to_string(double angstroms);
-void molecule_pdb(std::string path);
-void box_pdb(std::string path);
+void water_pdb(water_site_positions* molecule, int& site_counter, std::string path);
+void water_buffer_pdb(h2o_buffer* water_molecules, std::string path);
 
 void terminate_pbd(std::string path);
 

@@ -42,6 +42,6 @@ void set_CoM_force_n(h2o_buffer* water_molecules);
 
 void next_position(h2o_buffer* water_molecules, double dt);
 void next_velocity(h2o_buffer* water_molecules, double dt);
-void verlet_integrate(h2o_buffer* water_molecules, double dt, double t);
+void verlet_integrate(h2o_buffer* water_molecules, double dt);
 
 #endif

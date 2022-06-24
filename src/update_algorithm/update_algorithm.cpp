@@ -4,6 +4,20 @@
 //#define k_b 1.38064852E-23
 //#define u 1.66054E-27
 
+/*
+O mass = 15.9994
+H mass = 1.008
+O charge = -1.1794
+H charge = 0.5897
+r_0 of OH bond = 0.9572
+Theta of HOH angle = 104.52
+OM distance = 0.1577
+LJ epsilon of O-O = 0.21084
+LJ sigma of O-O = 3.1668
+LJ sigma , epsilon  of OH, HH = 0.0
+Coulomb cutoff = 8.5
+*/
+
 void coulombic_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double q_a, double q_b)
 {
   //force constant

@@ -37,7 +37,7 @@ void lj_force(site_positions* site_a, site_positions* site_b, site_forces* force
   forces->fz = -4*epsilon*((12*pow(sigma, 12)*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 7)) - (6*pow(sigma, 6)*(z_b - z_a)/pow(pow(x_b - x_a, 2) + pow(y_b - y_a, 2) + pow(z_b - z_a, 2), 4)));
 }
 
-void add_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forces)
+void accumulate_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forces)
 {
   site_a->fx += forces->fx;
   site_a->fy += forces->fy;
@@ -49,7 +49,7 @@ void add_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forc
 
 }
 
-void set_forces_water(h2o_buffer* water_molecules)
+void set_forces_sites(h2o_buffer* water_molecules)
 {
   //physics constants
   double sigma = 1;
@@ -71,37 +71,37 @@ void set_forces_water(h2o_buffer* water_molecules)
     {
       // O - O interaction
       lj_force(&water_site_pos[i].O, &water_site_pos[j].O, &forces, sigma, epsilon);
-      add_force_sites(&water_site_fr[i].O, &water_site_fr[j].O, &forces);
+      accumulate_force_sites(&water_site_fr[i].O, &water_site_fr[j].O, &forces);
 
       // H1 - H1 interaction
       coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H1, &forces, q_H, q_H);
-      add_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H1, &forces);
+      accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H1, &forces);
       // H1 - H2 interaction
       coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H2, &forces, q_H, q_H);
-      add_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
+      accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
       // H1 - q1 interaction
       coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].q1, &forces, q_H, q_q);
-      add_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
+      accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
 
       // H2 - H1 interaction
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H1, &forces, q_H, q_H);
-      add_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H1, &forces);
+      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H1, &forces);
       // H2 - H2 interaction
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H2, &forces, q_H, q_H);
-      add_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
+      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
       // H1 - q1 interaction
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].q1, &forces, q_H, q_q);
-      add_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
+      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
 
       // q1 - H1 interaction
       coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H1, &forces, q_q, q_H);
-      add_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H1, &forces);
+      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H1, &forces);
       // q1 - H2 interaction
       coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H2, &forces, q_q, q_H);
-      add_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H2, &forces);
+      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H2, &forces);
       // q1 - q1 interaction
       coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].q1, &forces, q_q, q_q);
-      add_force_sites(&water_site_fr[i].q1, &water_site_fr[j].q1, &forces);
+      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].q1, &forces);
 
     }
   }
@@ -201,4 +201,15 @@ void next_velocity(h2o_buffer* water_molecules, double dt)
   {
     z_lin_dyn[i].com_w = z_lin_dyn[i].com_w + dt/2/m_water*(z_lin_dyn[i].com_Fz + z_lin_dyn[i].com_Fz_n);
   }
+}
+
+void verlet_integrate(h2o_buffer* water_molecules, double dt)
+{
+  set_forces_sites(water_molecules);
+  set_CoM_force(water_molecules);
+  next_position(water_molecules, dt);
+
+  set_forces_sites(water_molecules);
+  set_CoM_force_n(water_molecules);
+  next_velocity(water_molecules, dt);
 }

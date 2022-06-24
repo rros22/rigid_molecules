@@ -29,9 +29,9 @@
 //site forces
 void coulombic_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double q_a, double q_b);
 void lj_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double sigma, double epsilon);
-void add_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forces);
+void accumulate_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forces);
 //set site forces molecules
-void set_forces_water(h2o_buffer* water_molecules);
+void set_forces_sites(h2o_buffer* water_molecules);
 //calculate CoM forces
 void set_CoM_force(h2o_buffer* water_molecules);
 void set_CoM_force_n(h2o_buffer* water_molecules);
@@ -42,5 +42,6 @@ void set_CoM_force_n(h2o_buffer* water_molecules);
 
 void next_position(h2o_buffer* water_molecules, double dt);
 void next_velocity(h2o_buffer* water_molecules, double dt);
+void verlet_integrate(h2o_buffer* water_molecules, double dt, double t);
 
 #endif

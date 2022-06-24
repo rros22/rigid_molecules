@@ -14,8 +14,8 @@ void quaternion::set_axis(double theta, double q[3])
   (this->q)[2] = sin(theta/2)*q[2];
 }
 
-void quaternion::normalise(double q[3]){
-
+void quaternion::normalise(double q[3])
+{
   double norm = sqrt(pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
   q[0] /= norm;
   q[1] /= norm;
@@ -64,5 +64,4 @@ void quaternion::transform_vector(double* input, double* offset, double* output)
 
       output[i] += offset[i];
     }
-
 }

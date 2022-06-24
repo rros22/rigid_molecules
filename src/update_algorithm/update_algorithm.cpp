@@ -1,57 +1,6 @@
 #include "update_algorithm.hpp"
 #include <cmath>
 
-void site_global_coordiantes(h2o_buffer* water_molecules)
-{
-  //parameters
-  unsigned molecule_no = water_molecules->n;
-  water_site_forces* water_site_fr = water_molecules->water_site_fr;
-  water_site_positions* water_site_pos = water_molecules->water_site_pos;
-  lin_dyn_x* x_lin_dyn = water_molecules->x_lin_dyn;
-  lin_dyn_y* y_lin_dyn = water_molecules->y_lin_dyn;
-  lin_dyn_z* z_lin_dyn = water_molecules->z_lin_dyn;
-  quaternion* orientations = water_molecules->orientations;
-
-  //site local coordinates
-  double O_L[3] = {0, -0.065555, 0};
-  double H1_L[3] = {-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
-  double H2_L[3] = {0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
-  double q1_L[3] = {0, 0.15 - 0.065555, 0};
-
-  //array to store coordinates
-  double global_coordinates[3];
-  double offset[3];
-
-  //loop through all molecules
-  for (int i = 0; i < molecule_no; i++)
-  {
-    offset[0] = x_lin_dyn[i].com_x;
-    offset[1] = y_lin_dyn[i].com_y;
-    offset[2] = z_lin_dyn[i].com_z;
-
-    //O
-    orientations[i].transform_vector(O_L, offset, global_coordinates);
-    water_site_pos[i].O.x = global_coordinates[0];
-    water_site_pos[i].O.y = global_coordinates[1];
-    water_site_pos[i].O.z = global_coordinates[2];
-    //H1
-    orientations[i].transform_vector(H1_L, offset, global_coordinates);
-    water_site_pos[i].H1.x = global_coordinates[0];
-    water_site_pos[i].H1.y = global_coordinates[1];
-    water_site_pos[i].H1.z = global_coordinates[2];
-    //H2
-    orientations[i].transform_vector(H2_L, offset, global_coordinates);
-    water_site_pos[i].H2.x = global_coordinates[0];
-    water_site_pos[i].H2.y = global_coordinates[1];
-    water_site_pos[i].H2.z = global_coordinates[2];
-    //q1
-    orientations[i].transform_vector(q1_L, offset, global_coordinates);
-    water_site_pos[i].q1.x = global_coordinates[0];
-    water_site_pos[i].q1.y = global_coordinates[1];
-    water_site_pos[i].q1.z = global_coordinates[2];
-  }
-}
-
 void coulombic_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double q_a, double q_b)
 {
   //force constant

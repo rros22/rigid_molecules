@@ -13,10 +13,10 @@ struct quaternion
   quaternion(double theta, std::array<double, 3> &q);
 
   void set_angle(double theta);
-  void set_axis(std::array<double, 3> &q, double theta);
-  std::array<double, 3> normalise(std::array<double, 3> &q);
+  void set_axis(double theta, double q[3]);
+  void normalise(double q[3]);
   //setter functions
-  void set_quaternion(double theta, std::array<double, 3> &q);
+  void set_quaternion(double theta, double q[3]);
   //getter functions
   double get_angle();
   double get_norm();

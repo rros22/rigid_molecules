@@ -7,26 +7,27 @@ void quaternion::set_angle(double theta)
   this->q0 = cos(theta/2);
 }
 
-void quaternion::set_axis(std::array<double, 3> &q, double theta)
+void quaternion::set_axis(double theta, double q[3])
 {
   (this->q)[0] = sin(theta/2)*q[0];
   (this->q)[1] = sin(theta/2)*q[1];
   (this->q)[2] = sin(theta/2)*q[2];
 }
 
-std::array<double, 3> quaternion::normalise(std::array<double, 3> &q){
+void quaternion::normalise(double q[3]){
 
   double norm = sqrt(pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
-  return {q[0]/norm, q[1]/norm, q[2]/norm};
+  q[0] /= norm;
+  q[1] /= norm;
+  q[2] /= norm;
 }
 
-void quaternion::set_quaternion(double theta, std::array<double, 3> &q)
+void quaternion::set_quaternion(double theta, double q[3])
 {
   //normalise direction
-  std::array<double, 3> u = normalise(q);
-
+  normalise(q);
   //set members
-  set_axis(u, theta);
+  set_axis(theta, q);
   set_angle(theta);
 }
 
@@ -61,7 +62,7 @@ void quaternion::transform_vector(double* input, double* offset, double* output)
       output[i] = rotation_matrix[3*i]*input[0] + rotation_matrix[1 + 3*i]*input[1] +
                   rotation_matrix[2 + 3*i]*input[2];
 
-      output[i] += offset[i];  
+      output[i] += offset[i];
     }
 
 }

@@ -94,6 +94,10 @@ struct h2o_buffer
   h2o_buffer(){};
   h2o_buffer(unsigned n);
   void allocate(unsigned n);
+  //initialise particles positions
+  void site_global_coordiantes();
+  void initialise(double xyz[6]);
+
 
 };
 

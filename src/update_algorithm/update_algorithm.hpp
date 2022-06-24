@@ -20,7 +20,7 @@
   1. SIte position calculation
 */
 
-void site_global_coordiantes(h2o_buffer* water_molecules);
+
 
 /*
   1. SIte force calculation

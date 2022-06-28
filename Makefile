@@ -6,6 +6,7 @@ FLAGS = -std=c++17
 SRC = src
 OBJ = obj
 RES = results
+DEB = debug
 BIN = bin/output
 
 #List of project subdiretories
@@ -31,10 +32,10 @@ $(OBJ)/%.o: $$(foreach dir,$(DIRS),$$(wildcard $$(dir)/$$*.cpp))
 
 #Clean all o files and binaries
 clean:
-	rm $(OBJ)/*.o $(BIN) $(RES)/*.csv $(RES)/*.pdb
+	rm $(OBJ)/*.o $(BIN) $(RES)/*.csv $(RES)/*.pdb $(DEB)/*
 
 clean_results:
-	rm  $(RES)/*.csv
+	rm  $(RES)/*.csv $(RES)/*.pdb $(DEB)/*
 
 print_srcs:
 	@echo $(SRCS)

@@ -4,6 +4,9 @@
 //#define k_b 1.38064852E-23
 //#define u 1.66054E-27
 
+
+
+
 /*
 O mass = 15.9994
 H mass = 1.008
@@ -21,7 +24,7 @@ Coulomb cutoff = 8.5
 void coulombic_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double q_a, double q_b)
 {
   //force constant
-  double k_e = 8.988E9;
+  double k_e = 1;//8.988E9;
   //local variables for simplification, compiler will inline
   double x_a = site_a->x;
   double y_a = site_a->y;
@@ -69,11 +72,11 @@ void accumulate_force_sites(site_forces* site_a, site_forces* site_b, site_force
 void set_forces_sites(h2o_buffer* water_molecules)
 {
   //physics constants
-  double sigma = 3.1589; //angstroms
-  double epsilon = 0.1852;
+  double sigma = 1;//3.1589; //angstroms
+  double epsilon = 1;// 0.1852;
 
-  double q_H = 0.52;
-  double q_q = -1.04;
+  double q_H = 1;// 0.52;
+  double q_q = 1;// -1.04;
   //inlined by compiler
   unsigned molecule_no = water_molecules->n;
   water_site_positions* water_site_pos = water_molecules->water_site_pos;
@@ -171,7 +174,7 @@ void set_CoM_force_n(h2o_buffer* water_molecules)
 
 void next_position(h2o_buffer* water_molecules, double dt)
 {
-  double m_water = 18.01468;
+  double m_water = 1;// 18.01468;
   unsigned molecule_no = water_molecules->n;
   lin_dyn_x* x_lin_dyn = water_molecules->x_lin_dyn;
   lin_dyn_y* y_lin_dyn = water_molecules->y_lin_dyn;
@@ -196,7 +199,7 @@ void next_position(h2o_buffer* water_molecules, double dt)
 
 void next_velocity(h2o_buffer* water_molecules, double dt)
 {
-  double m_water = 18.01468;
+  double m_water = 1;// 18.01468;
   unsigned molecule_no = water_molecules->n;
   lin_dyn_x* x_lin_dyn = water_molecules->x_lin_dyn;
   lin_dyn_y* y_lin_dyn = water_molecules->y_lin_dyn;

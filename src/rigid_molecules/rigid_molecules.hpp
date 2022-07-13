@@ -91,12 +91,13 @@ struct h2o_buffer
   lin_dyn_z* z_lin_dyn;     //array of z linear dynamics components
   quaternion* orientations; //array of molecule orientations
 
-  h2o_buffer(){};
+  h2o_buffer(int i);
   h2o_buffer(unsigned n);
   void allocate(unsigned n);
   //initialise particles positions
   void site_global_coordiantes();
   void initialise(double xyz[6]);
+  void debug();
 
 
 };

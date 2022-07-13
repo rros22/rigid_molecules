@@ -20,25 +20,27 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  unsigned molecule_no = std::stoi(argv[1]);
   std::string path = "results/results.pdb";
   std::string debug_path = "debug/results.csv";
-  double domain[6] = {-5, 5, -5, 5, -5, 5};
-  h2o_buffer water_molecules(molecule_no);
-  water_molecules.initialise(domain);
+
+  unsigned molecule_no = std::stoi(argv[1]);
+
+  h2o_buffer water_molecules(1);
+  water_molecules.debug();
   water_buffer_pdb(&water_molecules, path);
   csv_forces(water_molecules, debug_path);
 
   int i = 0;
-  while(1)
+  int iterations = 1;
+  while(i < iterations)
 
   {
     verlet_integrate(&water_molecules, 1E-15);
     csv_forces(water_molecules, debug_path);
     //water_buffer_pdb(&water_molecules, path);
-    std::cout << i++ << std::endl;
-    if (i >= 1) {break;}
+    i++;
+    std::cout << i << std::endl;
   }
-
+  
   return 0;
 }

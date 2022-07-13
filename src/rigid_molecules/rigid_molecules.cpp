@@ -6,6 +6,10 @@
 /*
   Water molecule buffer
 */
+h2o_buffer::h2o_buffer(int i)
+{
+  std::cout << "Default constructor" << std::endl;
+}
 
 h2o_buffer::h2o_buffer(unsigned n)
 {
@@ -110,4 +114,35 @@ void h2o_buffer::site_global_coordiantes()
     water_site_pos[i].q1.y = global_coordinates[1];
     water_site_pos[i].q1.z = global_coordinates[2];
   }
+}
+
+//debug
+void h2o_buffer::debug()
+{
+  allocate(2);
+
+  double x1 = -5;
+  double x2 = 5;
+  double y1 = -5;
+  double y2 = 5;
+  double z1 = -5;
+  double z2 = 5;
+
+  double angle = 90*M_PI/180;
+  double axis[3] = {0, 0, 1};
+
+  x_lin_dyn[0].com_x = -2;
+  y_lin_dyn[0].com_y = 0;
+  z_lin_dyn[0].com_z = 0;
+
+  x_lin_dyn[1].com_x = 2;
+  y_lin_dyn[1].com_y = 0;
+  z_lin_dyn[1].com_z = 0;
+
+  orientations[0].set_quaternion(angle, axis);
+  orientations[1].set_quaternion(angle, axis);
+
+
+  site_global_coordiantes();
+
 }

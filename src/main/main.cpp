@@ -8,17 +8,14 @@
 #include "../post_processing/post_processing.hpp"
 #include "../quaternions/quaternions.hpp"
 #include "../update_algorithm/update_algorithm.hpp"
+#include "../parse/parse.hpp"
 #include "../debug/debug.hpp"
 
 
 int main(int argc, char* argv[])
 {
-  if (argv[1] == NULL)
-  {
-    std::cout << "Program executed without providing enough arguments"
-    << std::endl << "Number of molecules unspecified" << std::endl;
-    return 1;
-  }
+  unsigned molecule_no;
+  if (parse_molecules(argc, argv, molecule_no)){return 1;}
 
   std::string path = "results/results.pdb";
   std::string debug_path = "debug/results.csv";

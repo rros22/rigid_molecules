@@ -65,3 +65,27 @@ void quaternion::transform_vector(double* input, double* offset, double* output)
       output[i] += offset[i];
     }
 }
+
+void quaternion::transform_vector_invert(double* input, double* offset, double* output)
+{
+    //compiler will inline
+    double rotation_matrix[9];
+    //set matrix elements
+    rotation_matrix[0] = pow(q0, 2) + pow(q[0], 2) - pow(q[1], 2) - pow(q[2], 2);
+    rotation_matrix[1] = 2*(q[0]*q[1] + q0*q[2]);
+    rotation_matrix[2] = 2*(q[0]*q[2] - q0*q[1]);
+    rotation_matrix[3] = 2*(q[0]*q[1] - q0*q[2]);
+    rotation_matrix[4] = pow(q0, 2) - pow(q[0], 2) + pow(q[1], 2) - pow(q[2], 2);
+    rotation_matrix[5] = 2*(q[1]*q[2] + q0*q[0]);
+    rotation_matrix[6] = 2*(q[0]*q[2] + q0*q[1]);
+    rotation_matrix[7] = 2*(q[1]*q[2] - q0*q[0]);
+    rotation_matrix[8] = pow(q0, 2) - pow(q[0], 2) - pow(q[1], 2) + pow(q[2], 2);
+    //compute rotated vector
+    for (int i = 0; i < 3; i++)
+    {
+      input[i] -= offset[i];
+
+      output[i] = rotation_matrix[3*i]*input[0] + rotation_matrix[1 + 3*i]*input[1] +
+                  rotation_matrix[2 + 3*i]*input[2];
+    }
+}

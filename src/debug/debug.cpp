@@ -30,7 +30,7 @@ void csv_forces(h2o_buffer& molecules, std::string path)
   for (int i = 0; i < molecule_no; i++)
   {
     file << i + 1 << ". " ;
-    csv_CoM_force(x_lin_dyn, y_lin_dyn, z_lin_dyn, file);
+    csv_CoM_force(&x_lin_dyn[i], &y_lin_dyn[i], &z_lin_dyn[i], file);
   }
   file << std::endl;
   //print site forces

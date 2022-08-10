@@ -20,21 +20,19 @@ int main(int argc, char* argv[])
   std::string path = "results/results.pdb";
   std::string debug_path = "debug/results.csv";
 
-  unsigned molecule_no = std::stoi(argv[1]);
-
   h2o_buffer water_molecules(1);
   water_molecules.debug();
   water_buffer_pdb(&water_molecules, path);
   csv_forces(water_molecules, debug_path);
 
   int i = 0;
-  int iterations = 1;
+  int iterations = 10000;
   while(i < iterations)
 
   {
-    verlet_integrate(&water_molecules, 1E-15);
+    verlet_integrate(&water_molecules, 1E-2);
     csv_forces(water_molecules, debug_path);
-    //water_buffer_pdb(&water_molecules, path);
+    water_buffer_pdb(&water_molecules, path);
     i++;
     std::cout << i << std::endl;
   }

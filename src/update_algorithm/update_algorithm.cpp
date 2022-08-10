@@ -1,4 +1,5 @@
 #include "update_algorithm.hpp"
+#include "../debug/debug.hpp"
 #include <cmath>
 
 //#define k_b 1.38064852E-23
@@ -69,6 +70,13 @@ void accumulate_force_sites(site_forces* site_a, site_forces* site_b, site_force
 
 }
 
+void reset_forces_site(site_forces* site)
+{
+  site->fx = 0;
+  site->fy = 0;
+  site->fz = 0;
+}
+
 void set_forces_sites(h2o_buffer* water_molecules)
 {
   //physics constants
@@ -76,13 +84,21 @@ void set_forces_sites(h2o_buffer* water_molecules)
   double epsilon = 1;// 0.1852;
 
   double q_H = 1;//0.52;
-  double q_q = -1.04;
+  double q_q = -1; //-1.04
   //inlined by compiler
   unsigned molecule_no = water_molecules->n;
   water_site_positions* water_site_pos = water_molecules->water_site_pos;
   water_site_forces* water_site_fr = water_molecules->water_site_fr;
   //struct to store temp forces results
   site_forces forces;
+  //reset forces
+  for (int i = 0; i < molecule_no; i++)
+  {
+    reset_forces_site(&water_site_fr[i].O);
+    reset_forces_site(&water_site_fr[i].H1);
+    reset_forces_site(&water_site_fr[i].H2);
+    reset_forces_site(&water_site_fr[i].q1);
+  }
   //call site forces functions
   for (int i = 0; i < molecule_no; i++)
   {
@@ -227,8 +243,10 @@ void verlet_integrate(h2o_buffer* water_molecules, double dt)
   set_forces_sites(water_molecules);
   set_CoM_force(water_molecules);
   next_position(water_molecules, dt);
+  water_molecules->site_global_coordiantes();
 
   set_forces_sites(water_molecules);
   set_CoM_force_n(water_molecules);
   next_velocity(water_molecules, dt);
+  water_molecules->site_global_coordiantes();
 }

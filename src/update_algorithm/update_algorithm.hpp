@@ -1,6 +1,7 @@
 #ifndef UPDATE_ALGORITHM_HPP
 #define UPDATE_ALGORITHM_HPP
 
+#include <iostream>
 #include "../rigid_molecules/rigid_molecules.hpp"
 
 /*
@@ -31,6 +32,7 @@ void coulombic_force(site_positions* site_a, site_positions* site_b, site_forces
 void lj_force(site_positions* site_a, site_positions* site_b, site_forces* forces, double sigma, double epsilon);
 void accumulate_force_sites(site_forces* site_a, site_forces* site_b, site_forces* forces);
 //set site forces molecules
+void reset_forces_site(site_forces* site);
 void set_forces_sites(h2o_buffer* water_molecules);
 //calculate CoM forces
 void set_CoM_force(h2o_buffer* water_molecules);

@@ -6,7 +6,7 @@
 /*
   Water molecule buffer
 */
-h2o_buffer::h2o_buffer(int i)
+h2o_buffer::h2o_buffer()
 {
   std::cout << "Default constructor" << std::endl;
 }
@@ -27,7 +27,7 @@ void h2o_buffer::allocate(unsigned n)
   }
   //calculate memory required
   size_t buffer_size = n*(sizeof(water_site_positions) + sizeof(water_site_forces) +
-                          3*sizeof(lin_dyn_x) + sizeof(quaternion));
+                          3*sizeof(lin_dyn_x) + sizeof(quaternion) + sizeof(water_torques));
   //allocate
   buffer = malloc(buffer_size);
   //initialise pointers to different segments of the buffer
@@ -37,6 +37,7 @@ void h2o_buffer::allocate(unsigned n)
   y_lin_dyn = (lin_dyn_y *)(x_lin_dyn + n);
   z_lin_dyn = (lin_dyn_z *)(y_lin_dyn + n);
   orientations = (quaternion *)(z_lin_dyn + n);
+  water_torques = (torques*)(orientations + n);
 
 }
 
@@ -128,18 +129,18 @@ void h2o_buffer::debug()
   double z1 = -5;
   double z2 = 5;
 
-  double angle = -90*M_PI/180;
+  double angle = 90*M_PI/180;
   double angle_2 = 0;
-  double axis[3] = {0.7, 0, 1};
-  double axis_2[3] = {0, 3.4, 1};
+  double axis[3] = {0, 0, 1};
+  double axis_2[3] = {0, 1, 0};
 
-  x_lin_dyn[0].com_x = 3;
-  y_lin_dyn[0].com_y = -2;
-  z_lin_dyn[0].com_z = 0.5;
+  x_lin_dyn[0].com_x = -2;
+  y_lin_dyn[0].com_y = 0;
+  z_lin_dyn[0].com_z = 0;
 
-  x_lin_dyn[1].com_x = 4;
-  y_lin_dyn[1].com_y = 3.2;
-  z_lin_dyn[1].com_z = -2.6;
+  x_lin_dyn[1].com_x = 2;
+  y_lin_dyn[1].com_y = 0;
+  z_lin_dyn[1].com_z = 0;
 
   orientations[0].set_quaternion(angle, axis);
   orientations[1].set_quaternion(angle_2, axis_2);

@@ -71,6 +71,13 @@ struct lin_dyn_z
   double com_Fz_n;
 };
 
+struct torques
+{
+  double tx;
+  double ty;
+  double tz;
+};
+
 //memory buffers for each molecule type
 
 /*
@@ -90,8 +97,10 @@ struct h2o_buffer
   lin_dyn_y* y_lin_dyn;     //array of y linear dynamics components
   lin_dyn_z* z_lin_dyn;     //array of z linear dynamics components
   quaternion* orientations; //array of molecule orientations
+  torques* water_torques; //array of xyz torques
 
-  h2o_buffer(int i);
+
+  h2o_buffer();
   h2o_buffer(unsigned n);
   void allocate(unsigned n);
   //initialise particles positions

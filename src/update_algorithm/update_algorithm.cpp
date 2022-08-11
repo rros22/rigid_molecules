@@ -85,7 +85,7 @@ void set_forces_sites(h2o_buffer* water_molecules)
   double epsilon = 1;// 0.1852;
 
   double q_H = 1;//0.52;
-  double q_q = -1; //-1.04
+  double q_q = 1; //-1.04
   //inlined by compiler
   unsigned molecule_no = water_molecules->n;
   water_site_positions* water_site_pos = water_molecules->water_site_pos;
@@ -106,8 +106,8 @@ void set_forces_sites(h2o_buffer* water_molecules)
     for (int j = i + 1; j < molecule_no; j++)
     {
       // O - O interaction
-      lj_force(&water_site_pos[i].O, &water_site_pos[j].O, &forces, sigma, epsilon);
-      accumulate_force_sites(&water_site_fr[i].O, &water_site_fr[j].O, &forces);
+      //lj_force(&water_site_pos[i].O, &water_site_pos[j].O, &forces, sigma, epsilon);
+      //accumulate_force_sites(&water_site_fr[i].O, &water_site_fr[j].O, &forces);
 
       // H1 - H1 interaction
       coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H1, &forces, q_H, q_H);
@@ -116,8 +116,8 @@ void set_forces_sites(h2o_buffer* water_molecules)
       coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H2, &forces, q_H, q_H);
       accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
       // H1 - q1 interaction
-      coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].q1, &forces, q_H, q_q);
-      accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
+      //coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].q1, &forces, q_H, q_q);
+      //accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
 
       // H2 - H1 interaction
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H1, &forces, q_H, q_H);
@@ -126,18 +126,18 @@ void set_forces_sites(h2o_buffer* water_molecules)
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H2, &forces, q_H, q_H);
       accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
       // H2 - q1 interaction
-      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].q1, &forces, q_H, q_q);
-      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
+      //coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].q1, &forces, q_H, q_q);
+      //accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
 
       // q1 - H1 interaction
-      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H1, &forces, q_q, q_H);
-      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H1, &forces);
+      //coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H1, &forces, q_q, q_H);
+      //accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H1, &forces);
       // q1 - H2 interaction
-      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H2, &forces, q_q, q_H);
-      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H2, &forces);
+      //coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H2, &forces, q_q, q_H);
+      //accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H2, &forces);
       // q1 - q1 interaction
-      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].q1, &forces, q_q, q_q);
-      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].q1, &forces);
+      //coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].q1, &forces, q_q, q_q);
+      //accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].q1, &forces);
 
     }
   }
@@ -256,12 +256,12 @@ void verlet_integrate(h2o_buffer* water_molecules, double dt)
   Orientation integration
 */
 
-void compute_torques(h2o_buffer* water_molecules, double torques[3])
+void compute_torques(h2o_buffer* water_molecules)
 {
   unsigned molecule_no = water_molecules->n;
   water_site_forces* water_site_fr = water_molecules->water_site_fr;
   quaternion* orientations = water_molecules->orientations;
-
+  torques* water_torques = water_molecules->water_torques;
   //need to update to compute torque about each direction separately
   //transformation offset
   double zero[3] = {0, 0, 0};
@@ -303,6 +303,8 @@ void compute_torques(h2o_buffer* water_molecules, double torques[3])
     force_global[2] = water_site_fr[i].H1.fz;
 
     orientations[i].transform_vector_invert(force_global, zero, local_H1);
+    //std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
+    //std::cout << local_H1[0] << ", " << local_H1[1] << ", " << local_H1[2] << std::endl;
 
     //H2
     force_global[0] = water_site_fr[i].H2.fx;
@@ -310,7 +312,8 @@ void compute_torques(h2o_buffer* water_molecules, double torques[3])
     force_global[2] = water_site_fr[i].H2.fz;
 
     orientations[i].transform_vector_invert(force_global, zero, local_H2);
-
+    //std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
+    //std::cout << local_H2[0] << ", " << local_H2[1] << ", " << local_H2[2] << std::endl;
     //q1
     force_global[0] = water_site_fr[i].q1.fx;
     force_global[1] = water_site_fr[i].q1.fy;
@@ -324,11 +327,12 @@ void compute_torques(h2o_buffer* water_molecules, double torques[3])
     cross_product(q1_L, local_q1, torque_q1);
 
     //sum torques
-    torques[0] = torque_O[0]+ torque_H1[0] + torque_H2[0] + torque_q1[0];
-    torques[1] = torque_O[1]+ torque_H1[1] + torque_H2[1] + torque_q1[1];
-    torques[2] = torque_O[2]+ torque_H1[2] + torque_H2[2] + torque_q1[2];
+    water_torques[i].tx = torque_O[0]+ torque_H1[0] + torque_H2[0] + torque_q1[0];
+    water_torques[i].ty = torque_O[1]+ torque_H1[1] + torque_H2[1] + torque_q1[1];
+    water_torques[i].tz = torque_O[2]+ torque_H1[2] + torque_H2[2] + torque_q1[2];
 
-    //std::cout << torques[0] << ", " << torques[1] << ", " << torques[2] << std::endl;
+    //std::cout << water_torques[i].tx << ", " << water_torques[i].ty << ", " << water_torques[i].tz << std::endl;
+    //std::cout << torque_magnitude(&water_torques[i]) << std::endl;
   }
 
 }
@@ -339,4 +343,9 @@ void cross_product(double vector_a[3], double vector_b[3], double output[3])
   output[0] = vector_a[1]*vector_b[2] - vector_a[2]*vector_b[1];
   output[1] = vector_a[2]*vector_b[0] - vector_a[0]*vector_b[2];
   output[2] = vector_a[0]*vector_b[1] - vector_a[1]*vector_b[0];
+}
+
+double torque_magnitude(torques* torque)
+{
+  return pow(pow(torque->tx, 2) + pow(torque->ty, 2) + pow(torque->tz, 2), 0.5);
 }

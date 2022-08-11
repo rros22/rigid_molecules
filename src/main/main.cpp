@@ -20,28 +20,27 @@ int main(int argc, char* argv[])
   std::string path = "results/results.pdb";
   std::string debug_path = "debug/results.csv";
 
-  h2o_buffer water_molecules(1);
+  //allocate memory
+  h2o_buffer water_molecules;
   water_molecules.debug();
+
+  //write molecular coordinates
   water_buffer_pdb(&water_molecules, path);
+  //write molecular and site forces
   csv_forces(water_molecules, debug_path);
+  //array to store torques
   double torque[3];
 
+  //define number of iterations
   int i = 0;
   int iterations = 1;
   while(i < iterations)
   {
-    verlet_integrate(&water_molecules, 1E-2);
+    set_forces_sites(&water_molecules);
+    compute_torques(&water_molecules);
+    csv_forces(water_molecules, debug_path);
     i++;
   }
 
-  /*
-  {
-    verlet_integrate(&water_molecules, 1E-2);
-    csv_forces(water_molecules, debug_path);
-    water_buffer_pdb(&water_molecules, path);
-    i++;
-    std::cout << i << std::endl;
-  }
-  */
   return 0;
 }

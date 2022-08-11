@@ -46,4 +46,12 @@ void next_position(h2o_buffer* water_molecules, double dt);
 void next_velocity(h2o_buffer* water_molecules, double dt);
 void verlet_integrate(h2o_buffer* water_molecules, double dt);
 
+/*
+  4. Orientation integration
+*/
+
+void compute_torques(h2o_buffer* water_molecules, double torques[3]);
+
+void cross_product(double vector_a[3], double vector_b[3], double output[3]);
+
 #endif

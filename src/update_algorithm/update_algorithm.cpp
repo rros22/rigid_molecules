@@ -1,5 +1,6 @@
 #include "update_algorithm.hpp"
 #include "../debug/debug.hpp"
+#include "../quaternions/quaternions.hpp"
 #include <cmath>
 
 //#define k_b 1.38064852E-23
@@ -124,7 +125,7 @@ void set_forces_sites(h2o_buffer* water_molecules)
       // H2 - H2 interaction
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H2, &forces, q_H, q_H);
       accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
-      // H1 - q1 interaction
+      // H2 - q1 interaction
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].q1, &forces, q_H, q_q);
       accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
 
@@ -249,4 +250,93 @@ void verlet_integrate(h2o_buffer* water_molecules, double dt)
   set_CoM_force_n(water_molecules);
   next_velocity(water_molecules, dt);
   water_molecules->site_global_coordiantes();
+}
+
+/*
+  Orientation integration
+*/
+
+void compute_torques(h2o_buffer* water_molecules, double torques[3])
+{
+  unsigned molecule_no = water_molecules->n;
+  water_site_forces* water_site_fr = water_molecules->water_site_fr;
+  quaternion* orientations = water_molecules->orientations;
+
+  //need to update to compute torque about each direction separately
+  //transformation offset
+  double zero[3] = {0, 0, 0};
+  //memory to store global site force
+  double force_global[3];
+
+  //site local coordinates
+  double O_L[3] = {0, -0.065555, 0};
+  double H1_L[3] = {-0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
+  double H2_L[3] = {0.9572*sin(52.26*M_PI/180), 0.9572*cos(52.26*M_PI/180) - 0.065555, 0};
+  double q1_L[3] = {0, 0.15 - 0.065555, 0};
+
+  //memory for forces
+  double local_O[3];
+  double local_H1[3];
+  double local_H2[3];
+  double local_q1[3];
+
+  //memory for torques
+  double torque_O[3];
+  double torque_H1[3];
+  double torque_H2[3];
+  double torque_q1[3];
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    //transform to local coordinates
+
+    //O
+    force_global[0] = water_site_fr[i].O.fx;
+    force_global[1] = water_site_fr[i].O.fy;
+    force_global[2] = water_site_fr[i].O.fz;
+
+    orientations[i].transform_vector_invert(force_global, zero, local_O);
+
+    //H1
+    force_global[0] = water_site_fr[i].H1.fx;
+    force_global[1] = water_site_fr[i].H1.fy;
+    force_global[2] = water_site_fr[i].H1.fz;
+
+    orientations[i].transform_vector_invert(force_global, zero, local_H1);
+
+    //H2
+    force_global[0] = water_site_fr[i].H2.fx;
+    force_global[1] = water_site_fr[i].H2.fy;
+    force_global[2] = water_site_fr[i].H2.fz;
+
+    orientations[i].transform_vector_invert(force_global, zero, local_H2);
+
+    //q1
+    force_global[0] = water_site_fr[i].q1.fx;
+    force_global[1] = water_site_fr[i].q1.fy;
+    force_global[2] = water_site_fr[i].q1.fz;
+
+    orientations[i].transform_vector_invert(force_global, zero, local_q1);
+    //compute torques
+    cross_product(O_L, local_O, torque_O);
+    cross_product(H1_L, local_H1, torque_H1);
+    cross_product(H2_L, local_H2, torque_H2);
+    cross_product(q1_L, local_q1, torque_q1);
+
+    //sum torques
+    torques[0] = torque_O[0]+ torque_H1[0] + torque_H2[0] + torque_q1[0];
+    torques[1] = torque_O[1]+ torque_H1[1] + torque_H2[1] + torque_q1[1];
+    torques[2] = torque_O[2]+ torque_H1[2] + torque_H2[2] + torque_q1[2];
+
+    //std::cout << torques[0] << ", " << torques[1] << ", " << torques[2] << std::endl;
+  }
+
+}
+
+
+void cross_product(double vector_a[3], double vector_b[3], double output[3])
+{
+  output[0] = vector_a[1]*vector_b[2] - vector_a[2]*vector_b[1];
+  output[1] = vector_a[2]*vector_b[0] - vector_a[0]*vector_b[2];
+  output[2] = vector_a[0]*vector_b[1] - vector_a[1]*vector_b[0];
 }

@@ -128,20 +128,21 @@ void h2o_buffer::debug()
   double z1 = -5;
   double z2 = 5;
 
-  double angle = 90*M_PI/180;
-  double angle_2 = -90*M_PI/180;
-  double axis[3] = {0, 0, 1};
+  double angle = -90*M_PI/180;
+  double angle_2 = 0;
+  double axis[3] = {0.7, 0, 1};
+  double axis_2[3] = {0, 3.4, 1};
 
-  x_lin_dyn[0].com_x = -2;
-  y_lin_dyn[0].com_y = 0;
-  z_lin_dyn[0].com_z = 0;
+  x_lin_dyn[0].com_x = 3;
+  y_lin_dyn[0].com_y = -2;
+  z_lin_dyn[0].com_z = 0.5;
 
-  x_lin_dyn[1].com_x = 2;
-  y_lin_dyn[1].com_y = 0;
-  z_lin_dyn[1].com_z = 0;
+  x_lin_dyn[1].com_x = 4;
+  y_lin_dyn[1].com_y = 3.2;
+  z_lin_dyn[1].com_z = -2.6;
 
   orientations[0].set_quaternion(angle, axis);
-  orientations[1].set_quaternion(angle_2, axis);
+  orientations[1].set_quaternion(angle_2, axis_2);
 
 
   site_global_coordiantes();

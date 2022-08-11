@@ -24,11 +24,17 @@ int main(int argc, char* argv[])
   water_molecules.debug();
   water_buffer_pdb(&water_molecules, path);
   csv_forces(water_molecules, debug_path);
+  double torque[3];
 
   int i = 0;
-  int iterations = 10000;
+  int iterations = 1;
   while(i < iterations)
+  {
+    verlet_integrate(&water_molecules, 1E-2);
+    i++;
+  }
 
+  /*
   {
     verlet_integrate(&water_molecules, 1E-2);
     csv_forces(water_molecules, debug_path);
@@ -36,6 +42,6 @@ int main(int argc, char* argv[])
     i++;
     std::cout << i << std::endl;
   }
-
+  */
   return 0;
 }

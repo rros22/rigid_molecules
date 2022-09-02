@@ -27,7 +27,7 @@ void h2o_buffer::allocate(unsigned n)
   }
   //calculate memory required
   size_t buffer_size = n*(sizeof(water_site_positions) + sizeof(water_site_forces) +
-                          3*sizeof(lin_dyn_x) + sizeof(quaternion) + sizeof(water_torques));
+                          3*sizeof(lin_dyn_x) + sizeof(quaternion) + sizeof(torques));
   //allocate
   buffer = malloc(buffer_size);
   //initialise pointers to different segments of the buffer

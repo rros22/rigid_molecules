@@ -113,15 +113,15 @@ void set_forces_sites(h2o_buffer* water_molecules)
       coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H1, &forces, q_H, q_H);
       accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H1, &forces);
       // H1 - H2 interaction
-      coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H2, &forces, q_H, q_H);
-      accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
+      //coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H2, &forces, q_H, q_H);
+      //accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
       // H1 - q1 interaction
       //coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].q1, &forces, q_H, q_q);
       //accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
 
       // H2 - H1 interaction
-      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H1, &forces, q_H, q_H);
-      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H1, &forces);
+      //coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H1, &forces, q_H, q_H);
+      //accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H1, &forces);
       // H2 - H2 interaction
       coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H2, &forces, q_H, q_H);
       accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
@@ -303,8 +303,8 @@ void compute_torques(h2o_buffer* water_molecules)
     force_global[2] = water_site_fr[i].H1.fz;
 
     orientations[i].transform_vector_invert(force_global, zero, local_H1);
-    //std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
-    //std::cout << local_H1[0] << ", " << local_H1[1] << ", " << local_H1[2] << std::endl;
+    std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
+    std::cout << local_H1[0] << ", " << local_H1[1] << ", " << local_H1[2] << std::endl;
 
     //H2
     force_global[0] = water_site_fr[i].H2.fx;
@@ -312,8 +312,8 @@ void compute_torques(h2o_buffer* water_molecules)
     force_global[2] = water_site_fr[i].H2.fz;
 
     orientations[i].transform_vector_invert(force_global, zero, local_H2);
-    //std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
-    //std::cout << local_H2[0] << ", " << local_H2[1] << ", " << local_H2[2] << std::endl;
+    std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
+    std::cout << local_H2[0] << ", " << local_H2[1] << ", " << local_H2[2] << std::endl;
     //q1
     force_global[0] = water_site_fr[i].q1.fx;
     force_global[1] = water_site_fr[i].q1.fy;
@@ -332,7 +332,7 @@ void compute_torques(h2o_buffer* water_molecules)
     water_torques[i].tz = torque_O[2]+ torque_H1[2] + torque_H2[2] + torque_q1[2];
 
     //std::cout << water_torques[i].tx << ", " << water_torques[i].ty << ", " << water_torques[i].tz << std::endl;
-    //std::cout << torque_magnitude(&water_torques[i]) << std::endl;
+    std::cout << torque_magnitude(&water_torques[i]) << std::endl;
   }
 
 }

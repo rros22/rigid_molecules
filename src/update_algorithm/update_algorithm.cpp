@@ -334,9 +334,73 @@ void compute_torques(h2o_buffer* water_molecules)
     //std::cout << water_torques[i].tx << ", " << water_torques[i].ty << ", " << water_torques[i].tz << std::endl;
     std::cout << torque_magnitude(&water_torques[i]) << std::endl;
   }
-
 }
 
+void compute_angular_velocity(quaternion orientation, quaternion velocity, double omega[3])
+{
+  double q[4] = {orientation.q0, orientation.q[0], orientation.q[1], orientation.q[2]};
+  double q_dot[4] = {velocity.q0, velocity.q[0], velocity.q[1], velocity.q[2]};
+
+  omega[0] = -q[1]*q_dot[0] + q[0]*q_dot[1] + q[3]*q_dot[2] - q[2]*q_dot[3];
+  omega[1] = -q[2]*q_dot[0] - q[3]*q_dot[1] + q[0]*q_dot[2] + q[1]*q_dot[3];
+  omega[2] = -q[3]*q_dot[0] + q[3]*q_dot[1] - q[1]*q_dot[2] + q[0]*q_dot[3];
+}
+
+void compute_quat_accel(h2o_buffer* water_molecules)
+{
+  unsigned molecule_no = water_molecules->n;
+  quaternion* orientations = water_molecules->orientations;
+  quaternion_derivatives* quat_derivatives = water_molecules->quat_derivatives;
+  torques* water_torques = water_molecules->water_torques;
+
+  double I[3] = {1, 1, 1};
+  double q[4];
+  double omega[3];
+  double v[4];
+  for (int i = 0; i < molecule_no; i++)
+  {
+    //compute angular velocity
+    compute_angular_velocity(orientations[i], quat_derivatives[i].v_current, omega);
+    //define rhs vector
+    v[0] = -2*pow(orientations[i].get_norm(), 2);
+    v[1] = water_torques[i].tx + omega[1]*omega[2]*(I[1] - I[2])/I[0];
+    v[2] = water_torques[i].ty + omega[2]*omega[0]*(I[2] - I[0])/I[1];
+    v[3] = water_torques[i].tz + omega[0]*omega[1]*(I[0] - I[2])/I[2];
+    //define q
+    q[0] = orientations[i].q0;
+    q[1] = orientations[i].q[0];
+    q[2] = orientations[i].q[1];
+    q[3] = orientations[i].q[2];
+    //compute quaternion accelerations
+    (quat_derivatives[i].accel).q0 = 0.5*(q[0]*v[0] - q[1]*v[1] - q[2]*v[2] - q[3]*v[3]);
+    (quat_derivatives[i].accel).q[0] = 0.5*(q[1]*v[0] + q[0]*v[1] - q[3]*v[2] + q[2]*v[3]);
+    (quat_derivatives[i].accel).q[1] = 0.5*(q[2]*v[0] + q[3]*v[1] + q[0]*v[2] - q[1]*v[3]);
+    (quat_derivatives[i].accel).q[2] = 0.5*(q[3]*v[0] - q[2]*v[1] + q[1]*v[2] + q[0]*v[3]);
+  }
+}
+
+void half_quat_velocity(h2o_buffer* water_molecules, double dt)
+{
+  unsigned molecule_no = water_molecules->n;
+  quaternion_derivatives* quat_derivatives = water_molecules->quat_derivatives;
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    quat_derivatives[i].v_half = quat_derivatives[i].v_current + (quat_derivatives[i].accel).multiply(0.5*dt);
+  }
+}
+
+void next_orientation(h2o_buffer* water_molecules, double dt)
+{
+  unsigned molecule_no = water_molecules->n;
+  quaternion* orientations = water_molecules->orientations;
+  quaternion_derivatives* quat_derivatives = water_molecules->quat_derivatives;
+
+  for (int i = 0; i < molecule_no; i++)
+  {
+    orientations[i] = orientations[i] + (quat_derivatives[i].v_half).multiply(dt);
+  }
+}
 
 void cross_product(double vector_a[3], double vector_b[3], double output[3])
 {

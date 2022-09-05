@@ -27,7 +27,8 @@ void h2o_buffer::allocate(unsigned n)
   }
   //calculate memory required
   size_t buffer_size = n*(sizeof(water_site_positions) + sizeof(water_site_forces) +
-                          3*sizeof(lin_dyn_x) + sizeof(quaternion) + sizeof(torques));
+                          3*sizeof(lin_dyn_x) + sizeof(quaternion) + sizeof(quaternion_derivatives)
+                           + sizeof(torques));
   //allocate
   buffer = malloc(buffer_size);
   //initialise pointers to different segments of the buffer
@@ -37,7 +38,8 @@ void h2o_buffer::allocate(unsigned n)
   y_lin_dyn = (lin_dyn_y *)(x_lin_dyn + n);
   z_lin_dyn = (lin_dyn_z *)(y_lin_dyn + n);
   orientations = (quaternion *)(z_lin_dyn + n);
-  water_torques = (torques*)(orientations + n);
+  quat_derivatives = (quaternion_derivatives *)(orientations + n);
+  water_torques = (torques *)(quat_derivatives + n);
 
 }
 

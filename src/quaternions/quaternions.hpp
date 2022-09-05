@@ -23,6 +23,9 @@ struct quaternion
   //calculate orientation. Compact the matrix struct definition
   void transform_vector(double* input, double* offset, double* output);
   void transform_vector_invert(double* input, double* offset, double* output);
+  quaternion operator+(quaternion quat);
+  quaternion operator-(quaternion quat);
+  quaternion multiply(double x);
 };
 
 

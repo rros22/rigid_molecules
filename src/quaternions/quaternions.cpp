@@ -89,3 +89,34 @@ void quaternion::transform_vector_invert(double* input, double* offset, double* 
                   rotation_matrix[2 + 3*i]*input[2];
     }
 }
+
+//operators
+quaternion quaternion::operator+(quaternion quat)
+{
+  quaternion result;
+  result.q0 = this->q0 + quat.q0;
+  (result.q)[0] = (this->q)[0] + (quat.q)[0];
+  (result.q)[1] = (this->q)[1] + (quat.q)[1];
+  (result.q)[2] = (this->q)[2] + (quat.q)[2];
+  return result;
+}
+
+quaternion quaternion::operator-(quaternion quat)
+{
+  quaternion result;
+  result.q0 = this->q0 - quat.q0;
+  (result.q)[0] = (this->q)[0] - (quat.q)[0];
+  (result.q)[1] = (this->q)[1] - (quat.q)[1];
+  (result.q)[2] = (this->q)[2] - (quat.q)[2];
+  return result;
+}
+
+quaternion quaternion::multiply(double x)
+{
+  quaternion result;
+  result.q0 = this->q0 * x;
+  (result.q)[0] = (this->q)[0] * x;
+  (result.q)[1] = (this->q)[1] * x;
+  (result.q)[2] = (this->q)[2] * x;
+  return result;
+}

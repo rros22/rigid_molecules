@@ -78,6 +78,14 @@ struct torques
   double tz;
 };
 
+struct quaternion_derivatives
+{
+  quaternion v_current;
+  quaternion v_half;
+  quaternion v_next;
+  quaternion accel;
+};
+
 //memory buffers for each molecule type
 
 /*
@@ -97,6 +105,7 @@ struct h2o_buffer
   lin_dyn_y* y_lin_dyn;     //array of y linear dynamics components
   lin_dyn_z* z_lin_dyn;     //array of z linear dynamics components
   quaternion* orientations; //array of molecule orientations
+  quaternion_derivatives* quat_derivatives;
   torques* water_torques; //array of xyz torques
 
 

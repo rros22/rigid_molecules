@@ -80,9 +80,8 @@ struct torques
 
 struct quaternion_derivatives
 {
-  quaternion v_current;
-  quaternion v_half;
-  quaternion v_next;
+  quaternion next_orientation;
+  quaternion vel;
   quaternion accel;
 };
 

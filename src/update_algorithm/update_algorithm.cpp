@@ -303,8 +303,6 @@ void compute_torques(h2o_buffer* water_molecules)
     force_global[2] = water_site_fr[i].H1.fz;
 
     orientations[i].transform_vector_invert(force_global, zero, local_H1);
-    std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
-    std::cout << local_H1[0] << ", " << local_H1[1] << ", " << local_H1[2] << std::endl;
 
     //H2
     force_global[0] = water_site_fr[i].H2.fx;
@@ -312,14 +310,14 @@ void compute_torques(h2o_buffer* water_molecules)
     force_global[2] = water_site_fr[i].H2.fz;
 
     orientations[i].transform_vector_invert(force_global, zero, local_H2);
-    std::cout << force_global[0] << ", " << force_global[1] << ", " << force_global[2] << std::endl;
-    std::cout << local_H2[0] << ", " << local_H2[1] << ", " << local_H2[2] << std::endl;
+
     //q1
     force_global[0] = water_site_fr[i].q1.fx;
     force_global[1] = water_site_fr[i].q1.fy;
     force_global[2] = water_site_fr[i].q1.fz;
 
     orientations[i].transform_vector_invert(force_global, zero, local_q1);
+
     //compute torques
     cross_product(O_L, local_O, torque_O);
     cross_product(H1_L, local_H1, torque_H1);
@@ -330,9 +328,6 @@ void compute_torques(h2o_buffer* water_molecules)
     water_torques[i].tx = torque_O[0]+ torque_H1[0] + torque_H2[0] + torque_q1[0];
     water_torques[i].ty = torque_O[1]+ torque_H1[1] + torque_H2[1] + torque_q1[1];
     water_torques[i].tz = torque_O[2]+ torque_H1[2] + torque_H2[2] + torque_q1[2];
-
-    //std::cout << water_torques[i].tx << ", " << water_torques[i].ty << ", " << water_torques[i].tz << std::endl;
-    std::cout << torque_magnitude(&water_torques[i]) << std::endl;
   }
 }
 
@@ -360,7 +355,7 @@ void compute_quat_accel(h2o_buffer* water_molecules)
   for (int i = 0; i < molecule_no; i++)
   {
     //compute angular velocity
-    compute_angular_velocity(orientations[i], quat_derivatives[i].v_current, omega);
+    compute_angular_velocity(orientations[i], quat_derivatives[i].vel, omega);
     //define rhs vector
     v[0] = -2*pow(orientations[i].get_norm(), 2);
     v[1] = water_torques[i].tx + omega[1]*omega[2]*(I[1] - I[2])/I[0];
@@ -379,14 +374,14 @@ void compute_quat_accel(h2o_buffer* water_molecules)
   }
 }
 
-void half_quat_velocity(h2o_buffer* water_molecules, double dt)
+void compute_quat_velocity(h2o_buffer* water_molecules, double dt)
 {
   unsigned molecule_no = water_molecules->n;
   quaternion_derivatives* quat_derivatives = water_molecules->quat_derivatives;
 
   for (int i = 0; i < molecule_no; i++)
   {
-    quat_derivatives[i].v_half = quat_derivatives[i].v_current + (quat_derivatives[i].accel).multiply(0.5*dt);
+    quat_derivatives[i].vel = quat_derivatives[i].vel + (quat_derivatives[i].accel).multiply(0.5*dt);
   }
 }
 
@@ -398,7 +393,7 @@ void next_orientation(h2o_buffer* water_molecules, double dt)
 
   for (int i = 0; i < molecule_no; i++)
   {
-    orientations[i] = orientations[i] + (quat_derivatives[i].v_half).multiply(dt);
+    quat_derivatives[i].next_orientation = orientations[i] + (quat_derivatives[i].vel).multiply(dt);
   }
 }
 
@@ -412,4 +407,25 @@ void cross_product(double vector_a[3], double vector_b[3], double output[3])
 double torque_magnitude(torques* torque)
 {
   return pow(pow(torque->tx, 2) + pow(torque->ty, 2) + pow(torque->tz, 2), 0.5);
+}
+
+void quaternion_verlet_integrate(h2o_buffer* water_molecules, double dt)
+{
+  //Step 1
+  //calculate torques.
+  compute_torques(water_molecules);
+  //calculate quaternion accel
+  compute_quat_accel(water_molecules);
+  //caluclate half step quaternion velocity
+  compute_quat_velocity(water_molecules, dt);
+  //calculate new quaternion orientations
+  next_orientation(water_molecules, dt);
+
+  //Step 2
+  //re-orientate molecules and calculate new stie forces
+
+  //calculate torques at new time step
+
+  //calculate quaternion accel with angular velocity guess
+
 }

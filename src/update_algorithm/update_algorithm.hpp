@@ -53,10 +53,12 @@ void verlet_integrate(h2o_buffer* water_molecules, double dt);
 void compute_torques(h2o_buffer* water_molecules);
 void compute_angular_velocity(quaternion orientation, quaternion velocity, double omega[3]);
 void compute_quat_accel(h2o_buffer* water_molecules);
-void half_quat_velocity(h2o_buffer* water_molecules, double dt);
+void compute_quat_velocity(h2o_buffer* water_molecules, double dt);
 void next_orientation(h2o_buffer* water_molecules, double dt);
 
 void cross_product(double vector_a[3], double vector_b[3], double output[3]);
 double torque_magnitude(torques* torque);
+
+void quaternion_verlet_integrate(h2o_buffer* water_molecules, double dt);
 
 #endif

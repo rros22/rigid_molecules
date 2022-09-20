@@ -33,12 +33,12 @@ int main(int argc, char* argv[])
 
   //define number of iterations
   int i = 0;
-  int iterations = 1;
+  int iterations = 10000;
   while(i < iterations)
   {
-    set_forces_sites(&water_molecules);
-    compute_torques(&water_molecules);
-    csv_forces(water_molecules, debug_path);
+    verlet_integrate(&water_molecules, 0.001);
+    quaternion_verlet_integrate(&water_molecules, 0.001);
+    water_buffer_pdb(&water_molecules, path);
     i++;
   }
 

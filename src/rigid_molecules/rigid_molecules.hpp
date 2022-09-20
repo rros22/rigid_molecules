@@ -78,9 +78,14 @@ struct torques
   double tz;
 };
 
+struct quaternion_orientation
+{
+  quaternion current;
+  quaternion next;
+};
+
 struct quaternion_derivatives
 {
-  quaternion next_orientation;
   quaternion vel;
   quaternion accel;
 };
@@ -103,7 +108,7 @@ struct h2o_buffer
   lin_dyn_x* x_lin_dyn;     //array of x linear dynamics components
   lin_dyn_y* y_lin_dyn;     //array of y linear dynamics components
   lin_dyn_z* z_lin_dyn;     //array of z linear dynamics components
-  quaternion* orientations; //array of molecule orientations
+  quaternion_orientation* orientations; //array of molecule orientations
   quaternion_derivatives* quat_derivatives;
   torques* water_torques; //array of xyz torques
 
@@ -113,6 +118,7 @@ struct h2o_buffer
   void allocate(unsigned n);
   //initialise particles positions
   void site_global_coordiantes();
+  void next_site_global_coordinates();
   void initialise(double xyz[6]);
   void debug();
 

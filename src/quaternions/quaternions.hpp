@@ -20,6 +20,7 @@ struct quaternion
   //getter functions
   double get_angle();
   double get_norm();
+  double get_axis(unsigned i);
   //calculate orientation. Compact the matrix struct definition
   void transform_vector(double* input, double* offset, double* output);
   void transform_vector_invert(double* input, double* offset, double* output);

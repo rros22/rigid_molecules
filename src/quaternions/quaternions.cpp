@@ -42,6 +42,19 @@ double quaternion::get_norm()
   return sqrt(pow(q0, 2) + pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
 }
 
+double quaternion::get_axis(unsigned i)
+{
+  if (i == 0 || i == 1 || i == 2)
+  {
+    return q[i]/sqrt(pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2));
+  }
+
+  else
+  {
+    return 0;
+  }
+}
+
 void quaternion::transform_vector(double* input, double* offset, double* output)
 {
     //compiler will inline

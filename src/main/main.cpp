@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
 
   std::string path = "results/results.pdb";
   std::string debug_path = "debug/results.csv";
+  std::string orientations_path = "debug/orientations.csv";
 
   //allocate memory
   h2o_buffer water_molecules;
@@ -26,6 +27,7 @@ int main(int argc, char* argv[])
 
   //write molecular coordinates
   water_buffer_pdb(&water_molecules, path);
+  csv_orientations(water_molecules, orientations_path, 0);
   //write molecular and site forces
   csv_forces(water_molecules, debug_path);
   //array to store torques
@@ -34,13 +36,16 @@ int main(int argc, char* argv[])
   //define number of iterations
   int i = 0;
   int iterations = 10000;
+
   while(i < iterations)
   {
-    verlet_integrate(&water_molecules, 0.001);
+    //verlet_integrate(&water_molecules, 0.001);
     quaternion_verlet_integrate(&water_molecules, 0.001);
+    csv_orientations(water_molecules, orientations_path, 0.001*(i + 1));
     water_buffer_pdb(&water_molecules, path);
     i++;
   }
+
 
   return 0;
 }

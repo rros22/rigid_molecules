@@ -106,38 +106,38 @@ void set_forces_sites(h2o_buffer* water_molecules)
     for (int j = i + 1; j < molecule_no; j++)
     {
       // O - O interaction
-      lj_force(&water_site_pos[i].O, &water_site_pos[j].O, &forces, sigma, epsilon);
-      accumulate_force_sites(&water_site_fr[i].O, &water_site_fr[j].O, &forces);
+      //lj_force(&water_site_pos[i].O, &water_site_pos[j].O, &forces, sigma, epsilon);
+      //accumulate_force_sites(&water_site_fr[i].O, &water_site_fr[j].O, &forces);
 
       // H1 - H1 interaction
       coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H1, &forces, q_H, q_H);
       accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H1, &forces);
       // H1 - H2 interaction
-      coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H2, &forces, q_H, q_H);
-      accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
+      //coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].H2, &forces, q_H, q_H);
+      //accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].H2, &forces);
       // H1 - q1 interaction
-      coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].q1, &forces, q_H, q_q);
-      accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
+      //coulombic_force(&water_site_pos[i].H1, &water_site_pos[j].q1, &forces, q_H, q_q);
+      //accumulate_force_sites(&water_site_fr[i].H1, &water_site_fr[j].q1, &forces);
 
       // H2 - H1 interaction
-      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H1, &forces, q_H, q_H);
-      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H1, &forces);
+      //coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H1, &forces, q_H, q_H);
+      //accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H1, &forces);
       // H2 - H2 interaction
-      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H2, &forces, q_H, q_H);
-      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
+      //coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].H2, &forces, q_H, q_H);
+      //accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].H2, &forces);
       // H2 - q1 interaction
-      coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].q1, &forces, q_H, q_q);
-      accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
+      //coulombic_force(&water_site_pos[i].H2, &water_site_pos[j].q1, &forces, q_H, q_q);
+      //accumulate_force_sites(&water_site_fr[i].H2, &water_site_fr[j].q1, &forces);
 
       // q1 - H1 interaction
-      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H1, &forces, q_q, q_H);
-      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H1, &forces);
+      //coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H1, &forces, q_q, q_H);
+      //accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H1, &forces);
       // q1 - H2 interaction
-      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H2, &forces, q_q, q_H);
-      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H2, &forces);
+      //coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].H2, &forces, q_q, q_H);
+      //accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].H2, &forces);
       // q1 - q1 interaction
-      coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].q1, &forces, q_q, q_q);
-      accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].q1, &forces);
+      //coulombic_force(&water_site_pos[i].q1, &water_site_pos[j].q1, &forces, q_q, q_q);
+      //accumulate_force_sites(&water_site_fr[i].q1, &water_site_fr[j].q1, &forces);
 
     }
   }
@@ -586,6 +586,7 @@ void quaternion_verlet_integrate(h2o_buffer* water_molecules, double dt)
 
   //step 3
   //reset starting parameters
-  void reset_orientation(h2o_buffer* water_molecules);
+  reset_orientation(water_molecules);
+  water_molecules->site_global_coordiantes();
 
 }
